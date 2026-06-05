@@ -483,22 +483,23 @@
   .map-container {
     position: relative;
     width: min(360px, 95vw);
-    aspect-ratio: 1 / 1.15;
   }
 
   .map-svg-wrap {
     position: relative;
-    width: 100%; height: 100%;
+    width: 100%;
     border: 2px solid var(--gold-dim);
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 0 40px rgba(201,168,76,0.2);
+    line-height: 0;
   }
 
-  /* Europe SVG map */
-  #europe-map {
-    width: 100%; height: 100%;
-    background: #1a2840;
+  #europe-map-img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 6px;
   }
 
   /* Fog of war overlay */
@@ -899,90 +900,7 @@
   <div class="map-stage">
     <div class="map-container">
       <div class="map-svg-wrap">
-        <!-- Fantasy-styled Europe map using SVG paths -->
-        <svg id="europe-map" viewBox="0 0 500 580" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <radialGradient id="seaGrad" cx="50%" cy="50%">
-              <stop offset="0%" stop-color="#1e3a5f"/>
-              <stop offset="100%" stop-color="#0d1e35"/>
-            </radialGradient>
-            <filter id="mapGlow">
-              <feGaussianBlur stdDeviation="1.5" result="blur"/>
-              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-            </filter>
-            <radialGradient id="countryGrad" cx="30%" cy="30%">
-              <stop offset="0%" stop-color="#4a7c59" stop-opacity="0.3"/>
-              <stop offset="100%" stop-color="#2d5c3a" stop-opacity="0"/>
-            </radialGradient>
-          </defs>
-
-          <!-- Sea background -->
-          <rect width="500" height="580" fill="url(#seaGrad)"/>
-          <!-- Sea texture lines -->
-          <g stroke="#1a3050" stroke-width="0.5" opacity="0.4">
-            <line x1="0" y1="50"  x2="500" y2="50"/>
-            <line x1="0" y1="100" x2="500" y2="100"/>
-            <line x1="0" y1="150" x2="500" y2="150"/>
-            <line x1="0" y1="200" x2="500" y2="200"/>
-            <line x1="0" y1="250" x2="500" y2="250"/>
-            <line x1="0" y1="300" x2="500" y2="300"/>
-            <line x1="0" y1="350" x2="500" y2="350"/>
-            <line x1="0" y1="400" x2="500" y2="400"/>
-            <line x1="0" y1="450" x2="500" y2="450"/>
-            <line x1="0" y1="500" x2="500" y2="500"/>
-            <line x1="0" y1="550" x2="500" y2="550"/>
-          </g>
-
-          <!-- Country fills — simplified silhouettes -->
-          <!-- Scandinavia / Norway + Sweden -->
-          <path d="M230,10 L255,18 L270,35 L275,60 L265,85 L270,110 L260,130 L255,155 L245,165 L235,155 L230,135 L225,110 L215,90 L210,65 L215,40 L225,22 Z" fill="#3d6b4a" stroke="#4a7c59" stroke-width="1"/>
-          <path d="M255,18 L280,25 L300,40 L310,65 L305,90 L295,115 L285,135 L275,150 L265,140 L265,115 L268,90 L270,65 L268,40 Z" fill="#3d6b4a" stroke="#4a7c59" stroke-width="1"/>
-          <!-- Finland -->
-          <path d="M300,20 L325,15 L345,30 L350,55 L340,80 L330,100 L315,115 L305,100 L308,75 L305,50 L300,35 Z" fill="#3d6b4a" stroke="#4a7c59" stroke-width="1"/>
-          <!-- Denmark -->
-          <path d="M228,155 L238,165 L245,175 L238,182 L228,178 L222,168 L224,158 Z" fill="#3d6b4a" stroke="#4a7c59" stroke-width="1"/>
-          <!-- UK / Britain -->
-          <path d="M148,80 L168,72 L178,85 L175,110 L165,130 L155,145 L145,148 L138,135 L140,110 L143,90 Z" fill="#3d6b4a" stroke="#4a7c59" stroke-width="1"/>
-          <!-- Ireland -->
-          <path d="M120,100 L135,95 L140,110 L135,125 L122,128 L115,115 L116,102 Z" fill="#3d6b4a" stroke="#4a7c59" stroke-width="1"/>
-          <!-- France -->
-          <path d="M165,175 L200,168 L218,178 L222,198 L218,220 L205,235 L188,240 L172,235 L160,220 L158,200 Z" fill="#3d6b4a" stroke="#4a7c59" stroke-width="1"/>
-          <!-- Iberian Peninsula — Spain & Portugal (pin target) -->
-          <path d="M130,245 L165,238 L188,242 L200,258 L198,285 L188,310 L172,328 L155,332 L135,325 L118,308 L112,280 L118,258 Z" fill="#3d6b4a" stroke="#4a7c59" stroke-width="1.5" id="spain-shape"/>
-          <!-- Portugal -->
-          <path d="M118,270 L130,265 L132,285 L128,308 L118,310 L110,295 L112,278 Z" fill="#3a664a" stroke="#4a7c59" stroke-width="1"/>
-          <!-- Germany / BeNeLux -->
-          <path d="M218,165 L248,160 L265,172 L270,192 L260,210 L245,215 L228,210 L218,195 L215,178 Z" fill="#3d6b4a" stroke="#4a7c59" stroke-width="1"/>
-          <!-- Poland -->
-          <path d="M265,158 L300,152 L318,162 L322,180 L315,198 L298,205 L278,200 L265,188 L262,172 Z" fill="#3d6b4a" stroke="#4a7c59" stroke-width="1"/>
-          <!-- Italy (boot) — pin target -->
-          <path d="M218,228 L232,220 L248,225 L255,242 L258,265 L255,285 L248,305 L240,325 L232,340 L225,345 L220,330 L222,310 L228,290 L230,268 L228,248 L220,238 Z" fill="#3d6b4a" stroke="#4a7c59" stroke-width="1.5" id="italy-shape"/>
-          <!-- "Boot toe" -->
-          <path d="M228,340 L238,348 L245,360 L240,368 L230,365 L222,352 L224,342 Z" fill="#3d6b4a" stroke="#4a7c59" stroke-width="1"/>
-          <!-- Sicily -->
-          <path d="M222,370 L238,365 L245,375 L240,382 L228,384 L218,378 L218,370 Z" fill="#3d6b4a" stroke="#4a7c59" stroke-width="1"/>
-          <!-- Austria / Czech / Switzerland -->
-          <path d="M230,208 L260,205 L272,215 L270,230 L255,238 L238,235 L228,225 Z" fill="#3d6b4a" stroke="#4a7c59" stroke-width="1"/>
-          <!-- Balkans (simplified) -->
-          <path d="M268,228 L300,220 L320,230 L328,255 L318,278 L300,288 L280,282 L265,265 L262,245 Z" fill="#3d6b4a" stroke="#4a7c59" stroke-width="1"/>
-          <!-- Greece -->
-          <path d="M288,285 L308,278 L318,290 L315,310 L305,325 L292,328 L283,315 L282,298 Z" fill="#3d6b4a" stroke="#4a7c59" stroke-width="1"/>
-          <!-- Romania / Hungary -->
-          <path d="M295,198 L328,192 L348,205 L350,225 L338,240 L318,245 L298,238 L288,222 L290,208 Z" fill="#3d6b4a" stroke="#4a7c59" stroke-width="1"/>
-          <!-- Ukraine / Belarus -->
-          <path d="M318,148 L368,138 L400,148 L408,170 L395,190 L368,200 L345,198 L325,185 L315,168 Z" fill="#3d6b4a" stroke="#4a7c59" stroke-width="1"/>
-          <!-- Baltics -->
-          <path d="M280,120 L305,112 L325,118 L328,138 L315,148 L292,150 L275,140 L272,125 Z" fill="#3d6b4a" stroke="#4a7c59" stroke-width="1"/>
-
-          <!-- Sea labels -->
-          <text x="80" y="200" font-family="'IM Fell English',serif" font-style="italic" font-size="11" fill="#2a4a6a" opacity="0.7" text-anchor="middle">Atlantic</text>
-          <text x="80" y="215" font-family="'IM Fell English',serif" font-style="italic" font-size="11" fill="#2a4a6a" opacity="0.7" text-anchor="middle">Ocean</text>
-          <text x="215" y="385" font-family="'IM Fell English',serif" font-style="italic" font-size="10" fill="#2a4a6a" opacity="0.7" text-anchor="middle">Mediterranean</text>
-          <text x="215" y="396" font-family="'IM Fell English',serif" font-style="italic" font-size="10" fill="#2a4a6a" opacity="0.7" text-anchor="middle">Sea</text>
-
-          <!-- Country glow overlay -->
-          <rect width="500" height="580" fill="url(#countryGrad)" pointer-events="none"/>
-        </svg>
+        <img id="europe-map-img" src="Map.jpg" alt="Map of Europe" />
 
         <!-- Fog of war -->
         <div class="fog-overlay" id="fog-overlay">

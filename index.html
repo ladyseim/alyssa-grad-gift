@@ -665,6 +665,40 @@
   }
   .cinematic-flash.flash { opacity: 0.6; }
 
+  /* ─── AUDIO TOGGLE ─── */
+  .audio-toggle {
+    position: fixed;
+    bottom: 1.4rem;
+    right: 1.2rem;
+    z-index: 50;
+    background: rgba(20, 10, 4, 0.75);
+    border: 1px solid var(--gold-dim);
+    border-radius: 20px;
+    padding: 0.45rem 0.9rem;
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    color: var(--gold);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    transition: border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+  .audio-toggle:active {
+    background: rgba(40, 20, 8, 0.9);
+  }
+  .audio-toggle.enabled {
+    border-color: var(--gold);
+    color: var(--gold-bright);
+    box-shadow: 0 0 10px rgba(201,168,76,0.25);
+  }
+  .audio-toggle-icon { font-size: 0.9rem; line-height: 1; }
+
   /* ─── SCROLL INDICATOR ─── */
   .scroll-hint {
     font-family: 'Cinzel', serif;
@@ -682,6 +716,15 @@
 </style>
 </head>
 <body>
+
+<!-- BACKGROUND AUDIO -->
+<audio id="bg-audio" src="303_Summoning.mp3" loop preload="none"></audio>
+
+<!-- AUDIO TOGGLE -->
+<button class="audio-toggle" id="audio-toggle" onclick="toggleAudio()" aria-label="Toggle background music">
+  <span class="audio-toggle-icon" id="audio-icon">🔊</span>
+  <span id="audio-label">Enable sound</span>
+</button>
 
 <!-- CINEMATIC FLASH -->
 <div class="cinematic-flash" id="flash"></div>
@@ -1333,6 +1376,63 @@ function launchParticles() {
   }
   animate();
   setTimeout(() => { running = false; }, 4000);
+}
+
+/* ═══════════════════════════════════════════
+   AUDIO
+═══════════════════════════════════════════ */
+const audio = document.getElementById('bg-audio');
+let audioEnabled = false;
+let fadeInterval = null;
+
+function toggleAudio() {
+  const btn   = document.getElementById('audio-toggle');
+  const icon  = document.getElementById('audio-icon');
+  const label = document.getElementById('audio-label');
+
+  if (!audioEnabled) {
+    // Enable — fade in from 0 to 0.3 over 2 seconds
+    audio.volume = 0;
+    audio.play().then(() => {
+      audioEnabled = true;
+      icon.textContent  = '🔇';
+      label.textContent = 'Mute';
+      btn.classList.add('enabled');
+      clearInterval(fadeInterval);
+      const target = 0.3;
+      const steps  = 40;
+      const increment = target / steps;
+      let step = 0;
+      fadeInterval = setInterval(() => {
+        step++;
+        audio.volume = Math.min(target, parseFloat((increment * step).toFixed(4)));
+        if (step >= steps) clearInterval(fadeInterval);
+      }, 2000 / steps);
+    }).catch(() => {
+      // Autoplay blocked — shouldn't happen since this is user-gesture triggered,
+      // but fail silently if it does.
+    });
+  } else {
+    // Mute — fade out then pause
+    audioEnabled = false;
+    icon.textContent  = '🔊';
+    label.textContent = 'Enable sound';
+    btn.classList.remove('enabled');
+    clearInterval(fadeInterval);
+    const startVol = audio.volume;
+    const steps    = 20;
+    const decrement = startVol / steps;
+    let step = 0;
+    fadeInterval = setInterval(() => {
+      step++;
+      audio.volume = Math.max(0, parseFloat((startVol - decrement * step).toFixed(4)));
+      if (step >= steps) {
+        clearInterval(fadeInterval);
+        audio.pause();
+        audio.volume = 0;
+      }
+    }, 600 / steps);
+  }
 }
 
 /* ═══════════════════════════════════════════

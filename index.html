@@ -331,6 +331,7 @@
     overflow: hidden;
     justify-content: center;
     gap: 0;
+    flex-direction: column;
   }
 
   .scroll-stage {
@@ -340,9 +341,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    max-height: 78vh;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+    flex-shrink: 1;
+    min-height: 0;
   }
 
   .scroll-top-rod, .scroll-bottom-rod {
@@ -371,13 +371,14 @@
   .scroll-body {
     width: 100%;
     background: linear-gradient(180deg, #f0dba8 0%, #e8d090 50%, #dfc87a 100%);
-    overflow: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     max-height: 0;
     transition: max-height 2.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     position: relative;
     box-shadow: inset 2px 0 8px rgba(100,60,10,0.2), inset -2px 0 8px rgba(100,60,10,0.2);
   }
-  .scroll-body.unfurled { max-height: 70vh; }
+  .scroll-body.unfurled { max-height: 62vh; }
 
   .scroll-body::before {
     content: '';
@@ -890,8 +891,9 @@
     </div>
     <div class="scroll-bottom-rod" id="scroll-bottom" style="opacity:0;transition:opacity 0.5s ease;margin-top:-1px;"></div>
   </div>
-  <button class="quest-btn" id="btn3" onclick="goToScreen(4)" style="position:relative;z-index:20;">[ I AM WORTHY ]</button>
 </section>
+<!-- btn3 lives outside screen3 so no scroll container can intercept taps -->
+<button class="quest-btn" id="btn3" onclick="goToScreen(4)" style="position:fixed;bottom:2.5rem;left:50%;transform:translateX(-50%);z-index:20;margin:0;display:none;">[ I AM WORTHY ]</button>
 
 <!-- ═══════════════════════════════════════
      SCREEN 4 — THE REVEAL
@@ -1049,6 +1051,10 @@ function goToScreen(n) {
   setTimeout(() => {
     document.getElementById(`screen${currentScreen}`).classList.remove('active');
     document.getElementById(`screen${currentScreen}`).classList.add('fade-out');
+    // Hide btn3 whenever we leave screen3
+    const btn3 = document.getElementById('btn3');
+    btn3.classList.remove('ready');
+    btn3.style.display = n === 3 ? '' : 'none';
     const next = document.getElementById(`screen${n}`);
     next.classList.add('active');
     next.classList.remove('fade-out');
@@ -1124,6 +1130,9 @@ function initScreen3() {
   const scrollBottom = document.getElementById('scroll-bottom');
   const btn = document.getElementById('btn3');
   const orn = document.getElementById('scroll-orn');
+
+  // Make btn3 visible now that we're on screen 3
+  btn.style.display = '';
 
   const lines = [
     { id: 'q1', text: '"The Guild Masters have deliberated..."',                          delay: 600,   fadeDur: 600 },

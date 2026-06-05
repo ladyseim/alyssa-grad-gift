@@ -329,6 +329,8 @@
     background: #0d0804;
     z-index: 8;
     overflow: hidden;
+    justify-content: center;
+    gap: 0;
   }
 
   .scroll-stage {
@@ -338,6 +340,9 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    max-height: 78vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .scroll-top-rod, .scroll-bottom-rod {
@@ -587,6 +592,16 @@
     text-shadow: 0 0 20px rgba(201,168,76,0.7);
   }
 
+  .reveal-line.footnote-line {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: clamp(0.7rem, 2.6vw, 0.82rem);
+    color: rgba(201,168,76,0.55);
+    margin-top: 1.6rem;
+    letter-spacing: 0.02em;
+    text-shadow: none;
+  }
+
   /* PARTICLE CANVAS */
   #particle-canvas {
     position: fixed;
@@ -611,15 +626,18 @@
     border-radius: 3px;
     cursor: pointer;
     position: relative;
-    z-index: 5;
+    z-index: 20;
     transition: all 0.3s ease;
     box-shadow: 0 0 12px rgba(201,168,76,0.2), inset 0 0 12px rgba(201,168,76,0.05);
-    margin-top: 2rem;
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
     white-space: nowrap;
     flex-shrink: 0;
     opacity: 0;
     pointer-events: none;
     -webkit-tap-highlight-color: transparent;
+    min-height: 44px;
+    touch-action: manipulation;
   }
   .quest-btn.ready {
     opacity: 1;
@@ -871,8 +889,7 @@
     </div>
     <div class="scroll-bottom-rod" id="scroll-bottom" style="opacity:0;transition:opacity 0.5s ease;margin-top:-1px;"></div>
   </div>
-
-  <button class="quest-btn" id="btn3" onclick="goToScreen(4)">[ I AM WORTHY ]</button>
+  <button class="quest-btn" id="btn3" onclick="goToScreen(4)" style="position:relative;z-index:20;">[ I AM WORTHY ]</button>
 </section>
 
 <!-- ═══════════════════════════════════════
@@ -994,6 +1011,7 @@
     <p class="reveal-line" id="r3"></p>
     <p class="reveal-line love-line" id="r4"></p>
     <p class="reveal-line final-line" id="r5"></p>
+    <p class="reveal-line footnote-line" id="r6"></p>
   </div>
 </section>
 
@@ -1280,6 +1298,7 @@ function revealLines() {
     { id: 'r3', text: '"Stay as long as the stars allow."', delay: 3600 },
     { id: 'r4', text: '"This quest was forged with love."', delay: 5600 },
     { id: 'r5', text: '"Your adventure begins Fall 2026. 🎓 ⚔️ ✨"', delay: 7200 },
+    { id: 'r6', text: 'This quest was made possible with the blessing of Treasurer Rick.', delay: 10000 },
   ];
   lines.forEach(({ id, text, delay }) => {
     setTimeout(() => {

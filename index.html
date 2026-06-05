@@ -629,6 +629,149 @@
   }
   #particle-canvas.active { opacity: 1; }
 
+  /* ═══════════════════════════════
+     SCREEN 5 — THE ORDERS
+  ═══════════════════════════════ */
+  #screen5 {
+    background: #1e0f05;
+    z-index: 6;
+    align-items: stretch;
+    justify-content: flex-start;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .orders-outer {
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 1.8rem 1.2rem 3rem;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .orders-paper {
+    background: linear-gradient(150deg, #f5e6b8 0%, #ecd88a 45%, #e2cc72 100%);
+    border-radius: 6px;
+    padding: 2rem 1.6rem 2rem;
+    border: 2px solid var(--gold-dim);
+    box-shadow:
+      0 0 0 4px #2c1a0e,
+      0 0 0 6px var(--gold-dim),
+      0 0 40px rgba(201,168,76,0.35),
+      inset 0 0 50px rgba(120,70,10,0.2);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .orders-paper::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+    pointer-events: none;
+    border-radius: 4px;
+  }
+
+  .orders-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(0.9rem, 3.5vw, 1.1rem);
+    color: var(--dark-brown);
+    text-align: center;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.6rem;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.35);
+    opacity: 0;
+    transition: opacity 0.8s ease;
+  }
+  .orders-title.visible { opacity: 1; }
+
+  .orders-divider {
+    border: none;
+    border-top: 1.5px solid var(--gold-dim);
+    margin: 0 0 1.4rem;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+  }
+  .orders-divider.visible { opacity: 0.6; }
+
+  .orders-list {
+    list-style: none;
+    margin: 0 0 1.6rem;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .order-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.9s ease, transform 0.9s ease;
+  }
+  .order-item.visible { opacity: 1; transform: translateY(0); }
+
+  .order-bullet {
+    font-size: 0.85rem;
+    color: var(--gold-dim);
+    flex-shrink: 0;
+    margin-top: 3px;
+    filter: drop-shadow(0 0 4px rgba(201,168,76,0.5));
+  }
+
+  .order-text {
+    font-family: 'IM Fell English', serif;
+    font-size: clamp(0.9rem, 3.4vw, 1.05rem);
+    color: var(--ink);
+    line-height: 1.55;
+  }
+
+  .orders-signoff {
+    border-top: 1px dotted rgba(92,51,23,0.3);
+    padding-top: 1.2rem;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 1.2s ease;
+  }
+  .orders-signoff.visible { opacity: 1; }
+
+  .signoff-line {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: clamp(0.85rem, 3.2vw, 1rem);
+    color: #3d2010;
+    margin-bottom: 0.5rem;
+    opacity: 0;
+    transition: opacity 1s ease;
+  }
+  .signoff-line.visible { opacity: 1; }
+
+  .signoff-name {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1rem, 4vw, 1.25rem);
+    color: var(--gold-dim);
+    letter-spacing: 0.04em;
+    text-shadow: 0 0 12px rgba(201,168,76,0.4);
+    opacity: 0;
+    transition: opacity 1.2s ease;
+  }
+  .signoff-name.visible { opacity: 1; }
+
+  .orders-wax {
+    text-align: center;
+    font-size: 1.4rem;
+    color: var(--gold-dim);
+    margin-top: 1.4rem;
+    opacity: 0;
+    transition: opacity 1s ease;
+  }
+  .orders-wax.visible { opacity: 0.4; }
+
   /* ─── SHARED BUTTON ─── */
   .quest-btn {
     font-family: 'Cinzel', serif;
@@ -951,6 +1094,48 @@
   </div>
 </section>
 
+<!-- btn4 lives outside screen4 like btn3 — fixed, shown only on screen4 -->
+<button class="quest-btn" id="btn4" onclick="goToScreen(5)" style="position:fixed;bottom:2.5rem;left:50%;transform:translateX(-50%);z-index:20;margin:0;display:none;">[ ACCEPT THE QUEST ]</button>
+
+<!-- ═══════════════════════════════════════
+     SCREEN 5 — THE ORDERS
+════════════════════════════════════════ -->
+<section class="screen" id="screen5">
+  <div class="orders-outer">
+    <div class="orders-paper">
+      <div class="sheet-corner tl"></div>
+      <div class="sheet-corner tr"></div>
+      <div class="sheet-corner bl"></div>
+      <div class="sheet-corner br"></div>
+
+      <h2 class="orders-title">Your Orders, Adventurer</h2>
+      <hr class="orders-divider" />
+
+      <ul class="orders-list">
+        <li class="order-item" id="oi1">
+          <span class="order-bullet">⚜</span>
+          <span class="order-text">Check your passport. Every adventurer needs valid travel documents.</span>
+        </li>
+        <li class="order-item" id="oi2">
+          <span class="order-bullet">⚜</span>
+          <span class="order-text">Claim your freedom. No obligations? No excuses.</span>
+        </li>
+        <li class="order-item" id="oi3">
+          <span class="order-bullet">⚜</span>
+          <span class="order-text">Await your coordinates. The Guild will confirm the realm — target window: November 2026.</span>
+        </li>
+      </ul>
+
+      <div class="orders-signoff" id="orders-signoff">
+        <p class="signoff-line" id="signoff1">The Guild Masters await your reply.</p>
+        <p class="signoff-name" id="signoff2">Uncle Teddy &amp; Lauren</p>
+      </div>
+
+      <div class="orders-wax">⚜</div>
+    </div>
+  </div>
+</section>
+
 <script>
 /* ═══════════════════════════════════════════
    AMBIENT RUNE CANVAS — SCREEN 1
@@ -1067,10 +1252,13 @@ function goToScreen(n) {
   setTimeout(() => {
     document.getElementById(`screen${currentScreen}`).classList.remove('active');
     document.getElementById(`screen${currentScreen}`).classList.add('fade-out');
-    // Hide btn3 whenever we leave screen3
+    // Manage fixed buttons visibility
     const btn3 = document.getElementById('btn3');
     btn3.classList.remove('ready');
     btn3.style.display = n === 3 ? '' : 'none';
+    const btn4 = document.getElementById('btn4');
+    btn4.classList.remove('ready');
+    btn4.style.display = n === 4 ? '' : 'none';
     const next = document.getElementById(`screen${n}`);
     next.classList.add('active');
     next.classList.remove('fade-out');
@@ -1079,6 +1267,7 @@ function goToScreen(n) {
     if (n === 2) initScreen2();
     if (n === 3) initScreen3();
     if (n === 4) initScreen4();
+    if (n === 5) initScreen5();
   }, 200);
 }
 
@@ -1253,6 +1442,44 @@ function revealLines() {
   });
   // Re-trigger particles gently later
   setTimeout(launchParticles, 9500);
+  // Show ACCEPT THE QUEST button after all text has settled
+  setTimeout(() => {
+    const btn4 = document.getElementById('btn4');
+    btn4.style.display = '';
+    setTimeout(() => btn4.classList.add('ready'), 50);
+  }, 12000);
+}
+
+/* ═══════════════════════════════════════════
+   SCREEN 5 — THE ORDERS
+═══════════════════════════════════════════ */
+function initScreen5() {
+  const title  = document.querySelector('.orders-title');
+  const divider = document.querySelector('.orders-divider');
+  const items   = ['oi1','oi2','oi3'];
+  const signoff = document.getElementById('orders-signoff');
+  const s1      = document.getElementById('signoff1');
+  const s2      = document.getElementById('signoff2');
+  const wax     = document.querySelector('.orders-wax');
+
+  setTimeout(() => {
+    title.classList.add('visible');
+    setTimeout(() => divider.classList.add('visible'), 400);
+  }, 300);
+
+  items.forEach((id, i) => {
+    setTimeout(() => {
+      document.getElementById(id).classList.add('visible');
+    }, 900 + i * 1100);
+  });
+
+  // Sign-off after all three items
+  setTimeout(() => {
+    signoff.classList.add('visible');
+    s1.classList.add('visible');
+    setTimeout(() => s2.classList.add('visible'), 1000);
+    setTimeout(() => wax.classList.add('visible'), 2000);
+  }, 900 + 3 * 1100 + 800);
 }
 
 /* ═══════════════════════════════════════════

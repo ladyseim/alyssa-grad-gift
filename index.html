@@ -570,6 +570,25 @@
   }
   .reveal-text-stage.visible { opacity: 1; }
 
+  .reveal-text-backdrop {
+    position: absolute;
+    bottom: 0;
+    left: 0; right: 0;
+    height: 70%;
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(6, 3, 14, 0.55) 30%,
+      rgba(6, 3, 14, 0.82) 65%,
+      rgba(6, 3, 14, 0.92) 100%
+    );
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    pointer-events: none;
+    z-index: 5;
+    border-radius: 0 0 6px 6px;
+  }
+
   .reveal-line {
     font-family: 'IM Fell English', serif;
     font-size: clamp(0.95rem, 3.8vw, 1.15rem);
@@ -924,6 +943,9 @@
     </div>
   </div>
 
+  <!-- Smoky backdrop behind reveal text -->
+  <div class="reveal-text-backdrop" id="reveal-backdrop" style="opacity:0;transition:opacity 1s ease;"></div>
+
   <!-- Reveal text overlay -->
   <div class="reveal-text-stage" id="reveal-text">
     <p class="reveal-line" id="r1"></p>
@@ -1208,8 +1230,9 @@ function initScreen4() {
       setTimeout(() => {
         launchParticles();
 
-        // Step 4: Reveal text
+        // Step 4: Reveal text + backdrop
         setTimeout(() => {
+          document.getElementById('reveal-backdrop').style.opacity = '1';
           revealStage.classList.add('visible');
           revealLines();
         }, 1800);

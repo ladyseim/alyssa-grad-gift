@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>A Message from the Guild</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Cinzel+Decorative:wght@400;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet" />
+<style>
+  /* ─── RESET & BASE ─── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --parchment:  #f4e4c1;
+    --parchment2: #e8d4a0;
+    --dark-brown: #2c1a0e;
+    --brown-mid:  #5c3317;
+    --gold:       #c9a84c;
+    --gold-bright:#f0c040;
+    --gold-dim:   #8a6820;
+    --green:      #4a7c59;
+    --candle:     #fff8e7;
+    --glow-gold:  rgba(201,168,76,0.6);
+    --glow-green: rgba(74,124,89,0.5);
+    --ink:        #1a0e06;
+  }
+
+  html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+    background: #0a0502;
+    font-family: 'IM Fell English', Georgia, serif;
+    color: var(--parchment);
+    touch-action: manipulation;
+  }
+
+  /* ─── SCREENS ─── */
+  .screen {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.8s ease;
+    overflow: hidden;
+  }
+  .screen.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+  .screen.fade-out { opacity: 0; pointer-events: none; }
+
+  /* ─── PARCHMENT TEXTURE ─── */
+  .parchment-bg {
+    background-color: var(--dark-brown);
+    background-image:
+      radial-gradient(ellipse at 50% 0%, rgba(201,168,76,0.08) 0%, transparent 70%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.12'/%3E%3C/svg%3E");
+  }
+
+  /* ─── RUNE PARTICLES CANVAS ─── */
+  #rune-canvas {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ═══════════════════════════════
+     SCREEN 1 — THE SUMMONING
+  ═══════════════════════════════ */
+  #screen1 {
+    background: #080401;
+    z-index: 10;
+  }
+
+  .summoning-text-wrap {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 2rem 2.5rem;
+    max-width: 360px;
+  }
+
+  .summoning-line {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: clamp(1.1rem, 4.5vw, 1.35rem);
+    color: var(--parchment);
+    line-height: 1.8;
+    opacity: 0;
+    min-height: 2.2em;
+    text-shadow: 0 0 18px rgba(201,168,76,0.4);
+  }
+  .summoning-line.name-line {
+    font-family: 'Cinzel Decorative', serif;
+    font-style: normal;
+    font-size: clamp(1.3rem, 5.5vw, 1.6rem);
+    color: var(--gold-bright);
+    text-shadow: 0 0 20px rgba(240,192,64,0.9), 0 0 40px rgba(201,168,76,0.5);
+    letter-spacing: 0.04em;
+  }
+
+  /* WAX SEAL */
+  .seal-wrap {
+    position: relative;
+    z-index: 2;
+    margin-top: 2.5rem;
+    opacity: 0;
+    transform: scale(0.7);
+    transition: transform 0.6s cubic-bezier(0.34,1.56,0.64,1), opacity 0.6s ease;
+  }
+  .seal-wrap.visible { opacity: 1; transform: scale(1); }
+
+  .wax-seal {
+    width: 110px;
+    height: 110px;
+    position: relative;
+    cursor: pointer;
+  }
+  .wax-seal svg {
+    width: 100%; height: 100%;
+    filter: drop-shadow(0 0 12px rgba(180,60,20,0.8)) drop-shadow(0 0 24px rgba(201,168,76,0.4));
+    animation: sealPulse 2.8s ease-in-out infinite;
+  }
+  @keyframes sealPulse {
+    0%,100% { filter: drop-shadow(0 0 12px rgba(180,60,20,0.8)) drop-shadow(0 0 24px rgba(201,168,76,0.4)); }
+    50%      { filter: drop-shadow(0 0 20px rgba(200,80,30,1))   drop-shadow(0 0 40px rgba(201,168,76,0.7)); }
+  }
+
+  .seal-crack {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+  }
+  .seal-crack svg { width: 100%; height: 100%; }
+
+  /* SEAL BREAK ANIMATION */
+  @keyframes sealBreakL {
+    0%   { transform: rotate(0)   translate(0,0);    opacity: 1; }
+    100% { transform: rotate(-25deg) translate(-60px, 40px); opacity: 0; }
+  }
+  @keyframes sealBreakR {
+    0%   { transform: rotate(0)   translate(0,0);    opacity: 1; }
+    100% { transform: rotate(20deg)  translate(60px, 40px);  opacity: 0; }
+  }
+  .seal-breaking .seal-half-l { animation: sealBreakL 0.55s ease-in forwards; }
+  .seal-breaking .seal-half-r { animation: sealBreakR 0.55s ease-in forwards; }
+
+  .seal-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+    text-align: center;
+    margin-top: 0.6rem;
+    opacity: 0.8;
+    animation: labelBlink 3s ease-in-out infinite;
+  }
+  @keyframes labelBlink {
+    0%,100% { opacity: 0.8; } 50% { opacity: 0.4; }
+  }
+
+  /* ═══════════════════════════════
+     SCREEN 2 — CHARACTER SHEET
+  ═══════════════════════════════ */
+  #screen2 {
+    background: #1a0d05;
+    z-index: 9;
+    align-items: stretch;
+    justify-content: flex-start;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .sheet-outer {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 1.5rem 1.2rem 2rem;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sheet-paper {
+    background: linear-gradient(160deg, #f0dba8 0%, #e2c880 40%, #d4b86a 100%);
+    border-radius: 6px;
+    padding: 1.5rem 1.4rem 1.8rem;
+    border: 2px solid var(--gold-dim);
+    box-shadow:
+      0 0 0 4px #2c1a0e,
+      0 0 0 6px var(--gold-dim),
+      0 0 30px rgba(201,168,76,0.3),
+      inset 0 0 40px rgba(100,60,10,0.25);
+    position: relative;
+    overflow: hidden;
+    flex: 1;
+  }
+
+  .sheet-paper::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.07'/%3E%3C/svg%3E");
+    pointer-events: none;
+    border-radius: 4px;
+  }
+
+  .sheet-corner {
+    position: absolute;
+    width: 36px; height: 36px;
+    border-color: var(--gold-dim);
+    border-style: solid;
+    opacity: 0.6;
+  }
+  .sheet-corner.tl { top: 8px; left: 8px;  border-width: 2px 0 0 2px; }
+  .sheet-corner.tr { top: 8px; right: 8px; border-width: 2px 2px 0 0; }
+  .sheet-corner.bl { bottom: 8px; left: 8px;  border-width: 0 0 2px 2px; }
+  .sheet-corner.br { bottom: 8px; right: 8px; border-width: 0 2px 2px 0; }
+
+  .sheet-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1rem, 4vw, 1.25rem);
+    color: var(--dark-brown);
+    text-align: center;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.25rem;
+    text-shadow: 1px 1px 0 rgba(255,255,255,0.3);
+  }
+  .sheet-subtitle {
+    font-family: 'Cinzel', serif;
+    font-size: 0.6rem;
+    color: var(--brown-mid);
+    text-align: center;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    opacity: 0.8;
+  }
+  .sheet-divider {
+    border: none;
+    border-top: 1.5px solid var(--gold-dim);
+    margin: 0.6rem 0 1rem;
+    opacity: 0.6;
+  }
+
+  .char-field {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin-bottom: 0.85rem;
+    opacity: 0;
+    transform: translateX(-12px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .char-field.revealed { opacity: 1; transform: translateX(0); }
+
+  .field-label {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(0.58rem, 2.2vw, 0.68rem);
+    color: var(--brown-mid);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    min-width: 105px;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+  .field-value {
+    font-family: 'IM Fell English', serif;
+    font-size: clamp(0.85rem, 3.2vw, 1rem);
+    color: var(--ink);
+    line-height: 1.4;
+    border-bottom: 1px dotted rgba(92,51,23,0.35);
+    flex: 1;
+    padding-bottom: 2px;
+  }
+  .field-value em {
+    font-size: 0.82em;
+    color: var(--brown-mid);
+  }
+
+  .nat20-badge {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--dark-brown);
+    font-family: 'Cinzel', serif;
+    font-size: 0.6rem;
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: 3px;
+    margin-left: 4px;
+    letter-spacing: 0.05em;
+    vertical-align: middle;
+  }
+
+  .sheet-seal {
+    text-align: center;
+    margin-top: 1rem;
+    opacity: 0.3;
+    font-size: 1.6rem;
+  }
+
+  /* ═══════════════════════════════
+     SCREEN 3 — THE QUEST SCROLL
+  ═══════════════════════════════ */
+  #screen3 {
+    background: #0d0804;
+    z-index: 8;
+    overflow: hidden;
+  }
+
+  .scroll-stage {
+    position: relative;
+    z-index: 2;
+    width: min(340px, 92vw);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .scroll-top-rod, .scroll-bottom-rod {
+    width: 100%;
+    height: 22px;
+    background: linear-gradient(180deg, #8B5E2A 0%, #5c3317 40%, #3d2010 100%);
+    border-radius: 11px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.6), inset 0 1px 2px rgba(255,200,80,0.2);
+    position: relative;
+    z-index: 3;
+    flex-shrink: 0;
+  }
+  .scroll-top-rod::before, .scroll-top-rod::after,
+  .scroll-bottom-rod::before, .scroll-bottom-rod::after {
+    content: '';
+    position: absolute;
+    top: 50%; transform: translateY(-50%);
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #c9a84c, #8a5a1a);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+  }
+  .scroll-top-rod::before, .scroll-bottom-rod::before { left: -8px; }
+  .scroll-top-rod::after,  .scroll-bottom-rod::after  { right: -8px; }
+
+  .scroll-body {
+    width: 100%;
+    background: linear-gradient(180deg, #f0dba8 0%, #e8d090 50%, #dfc87a 100%);
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 2.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: relative;
+    box-shadow: inset 2px 0 8px rgba(100,60,10,0.2), inset -2px 0 8px rgba(100,60,10,0.2);
+  }
+  .scroll-body.unfurled { max-height: 70vh; }
+
+  .scroll-body::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+
+  .scroll-inner {
+    padding: 1.4rem 2rem 1.8rem;
+    position: relative;
+  }
+
+  .scroll-heading {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(0.8rem, 3vw, 0.95rem);
+    color: var(--dark-brown);
+    text-align: center;
+    letter-spacing: 0.1em;
+    margin-bottom: 1rem;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.4);
+  }
+
+  .quest-line {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: clamp(0.9rem, 3.5vw, 1.05rem);
+    color: var(--ink);
+    line-height: 1.75;
+    text-align: center;
+    opacity: 0;
+    min-height: 1.8em;
+  }
+  .quest-line.redacted {
+    font-style: normal;
+    letter-spacing: 0.05em;
+  }
+  .quest-line.coordinates {
+    font-size: 0.8em;
+    color: var(--brown-mid);
+    margin-top: 0.3rem;
+  }
+
+  .scroll-ornament {
+    text-align: center;
+    font-size: 1.2rem;
+    color: var(--gold-dim);
+    margin: 0.8rem 0;
+    opacity: 0;
+  }
+
+  /* ═══════════════════════════════
+     SCREEN 4 — THE REVEAL
+  ═══════════════════════════════ */
+  #screen4 {
+    background: #08050f;
+    z-index: 7;
+    overflow: hidden;
+  }
+
+  /* MAP */
+  .map-stage {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .map-container {
+    position: relative;
+    width: min(360px, 95vw);
+    aspect-ratio: 1 / 1.15;
+  }
+
+  .map-svg-wrap {
+    position: relative;
+    width: 100%; height: 100%;
+    border: 2px solid var(--gold-dim);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 0 40px rgba(201,168,76,0.2);
+  }
+
+  /* Europe SVG map */
+  #europe-map {
+    width: 100%; height: 100%;
+    background: #1a2840;
+  }
+
+  /* Fog of war overlay */
+  .fog-overlay {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 45%, #1a0e30 0%, #0d0820 60%, #060410 100%);
+    border-radius: 6px;
+    transition: opacity 3s ease;
+    pointer-events: none;
+  }
+  .fog-overlay.cleared { opacity: 0; }
+
+  .fog-particles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  /* Gold pin */
+  .map-pin {
+    position: absolute;
+    bottom: 28%;
+    left: 42%;
+    transform: translate(-50%, -100%) scale(0);
+    transition: transform 0.6s cubic-bezier(0.34,1.56,0.64,1);
+    pointer-events: none;
+    z-index: 5;
+  }
+  .map-pin.dropped { transform: translate(-50%, -100%) scale(1); }
+  .map-pin svg {
+    width: 36px; height: 36px;
+    filter: drop-shadow(0 0 8px rgba(240,192,64,0.9));
+    animation: pinPulse 2s ease-in-out infinite;
+  }
+  @keyframes pinPulse {
+    0%,100% { filter: drop-shadow(0 0 8px rgba(240,192,64,0.9)); }
+    50%      { filter: drop-shadow(0 0 16px rgba(240,192,64,1)) drop-shadow(0 0 30px rgba(201,168,76,0.6)); }
+  }
+
+  .pin-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.6rem;
+    color: var(--gold-bright);
+    text-align: center;
+    white-space: nowrap;
+    margin-top: 2px;
+    text-shadow: 0 0 8px rgba(201,168,76,0.8);
+    letter-spacing: 0.05em;
+  }
+
+  /* REVEAL TEXT */
+  .reveal-text-stage {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 2rem 3.5rem;
+    z-index: 6;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 1s ease;
+  }
+  .reveal-text-stage.visible { opacity: 1; }
+
+  .reveal-line {
+    font-family: 'IM Fell English', serif;
+    font-size: clamp(0.95rem, 3.8vw, 1.15rem);
+    color: var(--candle);
+    line-height: 1.9;
+    text-align: center;
+    text-shadow: 0 0 20px rgba(201,168,76,0.6);
+    opacity: 0;
+  }
+  .reveal-line.love-line {
+    margin-top: 1.2rem;
+    color: var(--gold-bright);
+    font-style: italic;
+    text-shadow: 0 0 25px rgba(240,192,64,0.8);
+  }
+  .reveal-line.final-line {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(0.8rem, 3vw, 0.95rem);
+    letter-spacing: 0.06em;
+    color: var(--gold);
+    margin-top: 0.4rem;
+    text-shadow: 0 0 20px rgba(201,168,76,0.7);
+  }
+
+  /* PARTICLE CANVAS */
+  #particle-canvas {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 15;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  #particle-canvas.active { opacity: 1; }
+
+  /* ─── SHARED BUTTON ─── */
+  .quest-btn {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(0.75rem, 3vw, 0.9rem);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gold-bright);
+    background: transparent;
+    border: 1.5px solid var(--gold);
+    padding: 0.75rem 2rem;
+    border-radius: 3px;
+    cursor: pointer;
+    position: relative;
+    z-index: 5;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 12px rgba(201,168,76,0.2), inset 0 0 12px rgba(201,168,76,0.05);
+    margin-top: 2rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+    opacity: 0;
+    pointer-events: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .quest-btn.ready {
+    opacity: 1;
+    pointer-events: all;
+    animation: btnPulse 3s ease-in-out infinite;
+  }
+  .quest-btn:active {
+    background: rgba(201,168,76,0.15);
+    box-shadow: 0 0 24px rgba(201,168,76,0.5);
+    transform: scale(0.97);
+  }
+  @keyframes btnPulse {
+    0%,100% { box-shadow: 0 0 12px rgba(201,168,76,0.2), inset 0 0 12px rgba(201,168,76,0.05); }
+    50%      { box-shadow: 0 0 24px rgba(201,168,76,0.5), inset 0 0 18px rgba(201,168,76,0.1); }
+  }
+
+  /* ─── AMBIENT RUNES (screen1) ─── */
+  .ambient-rune {
+    position: absolute;
+    font-size: clamp(1.2rem, 4vw, 1.8rem);
+    color: var(--green);
+    opacity: 0;
+    pointer-events: none;
+    text-shadow: 0 0 12px var(--glow-green);
+    animation: runeFloat 0s ease-in-out infinite;
+    user-select: none;
+  }
+
+  @keyframes runeGlow {
+    0%,100% { opacity: 0.12; text-shadow: 0 0 8px var(--glow-green); }
+    50%      { opacity: 0.35; text-shadow: 0 0 20px var(--glow-green), 0 0 35px rgba(74,124,89,0.3); }
+  }
+
+  /* ─── CINEMATIC FLASH ─── */
+  .cinematic-flash {
+    position: fixed;
+    inset: 0;
+    background: white;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 100;
+    transition: opacity 0.15s ease;
+  }
+  .cinematic-flash.flash { opacity: 0.6; }
+
+  /* ─── SCROLL INDICATOR ─── */
+  .scroll-hint {
+    font-family: 'Cinzel', serif;
+    font-size: 0.55rem;
+    letter-spacing: 0.15em;
+    color: var(--gold);
+    opacity: 0;
+    text-align: center;
+    margin-top: 0.5rem;
+    animation: hintFade 2s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+  .scroll-hint.visible { opacity: 0.6; }
+  @keyframes hintFade { 0%,100%{opacity:0.3} 50%{opacity:0.7} }
+</style>
+</head>
+<body>
+
+<!-- CINEMATIC FLASH -->
+<div class="cinematic-flash" id="flash"></div>
+
+<!-- PARTICLE CANVAS (screen 4 burst) -->
+<canvas id="particle-canvas"></canvas>
+
+<!-- ═══════════════════════════════════════
+     SCREEN 1 — THE SUMMONING
+════════════════════════════════════════ -->
+<section class="screen active" id="screen1">
+  <canvas id="rune-canvas"></canvas>
+
+  <div class="summoning-text-wrap">
+    <p class="summoning-line" id="s1-l1"></p>
+    <p class="summoning-line" id="s1-l2"></p>
+    <p class="summoning-line name-line" id="s1-l3"></p>
+  </div>
+
+  <div class="seal-wrap" id="seal-wrap">
+    <!-- Two-half seal for break animation -->
+    <div class="wax-seal" id="wax-seal" onclick="breakSeal()">
+      <svg viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg">
+        <!-- Left half -->
+        <g class="seal-half-l">
+          <clipPath id="leftClip"><rect x="0" y="0" width="55" height="110"/></clipPath>
+          <g clip-path="url(#leftClip)">
+            <circle cx="55" cy="55" r="50" fill="#8B1A0A"/>
+            <circle cx="55" cy="55" r="50" fill="url(#sealGrad)"/>
+            <circle cx="55" cy="55" r="44" fill="none" stroke="#c0402a" stroke-width="1.5" opacity="0.5"/>
+            <circle cx="55" cy="55" r="38" fill="none" stroke="#c0402a" stroke-width="1" opacity="0.4"/>
+          </g>
+        </g>
+        <!-- Right half -->
+        <g class="seal-half-r">
+          <clipPath id="rightClip"><rect x="55" y="0" width="55" height="110"/></clipPath>
+          <g clip-path="url(#rightClip)">
+            <circle cx="55" cy="55" r="50" fill="#8B1A0A"/>
+            <circle cx="55" cy="55" r="50" fill="url(#sealGrad)"/>
+            <circle cx="55" cy="55" r="44" fill="none" stroke="#c0402a" stroke-width="1.5" opacity="0.5"/>
+            <circle cx="55" cy="55" r="38" fill="none" stroke="#c0402a" stroke-width="1" opacity="0.4"/>
+          </g>
+        </g>
+        <!-- Shared center rune (on top) -->
+        <text x="55" y="62" text-anchor="middle" font-size="32" fill="#f4e4c1" opacity="0.9" font-family="serif">⚜</text>
+        <!-- Crack line overlay -->
+        <g class="seal-crack" id="seal-crack-svg" style="opacity:0">
+          <line x1="55" y1="10" x2="55" y2="100" stroke="#1a0e06" stroke-width="2.5" stroke-dasharray="4 3"/>
+        </g>
+        <defs>
+          <radialGradient id="sealGrad" cx="40%" cy="35%">
+            <stop offset="0%" stop-color="#b52010" stop-opacity="0.6"/>
+            <stop offset="100%" stop-color="#4a0800" stop-opacity="0.4"/>
+          </radialGradient>
+        </defs>
+      </svg>
+    </div>
+    <div class="seal-label">TAP TO BREAK THE SEAL</div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     SCREEN 2 — CHARACTER SHEET
+════════════════════════════════════════ -->
+<section class="screen" id="screen2">
+  <div class="sheet-outer">
+    <div class="sheet-paper" id="sheet-paper">
+      <div class="sheet-corner tl"></div>
+      <div class="sheet-corner tr"></div>
+      <div class="sheet-corner bl"></div>
+      <div class="sheet-corner br"></div>
+
+      <h1 class="sheet-title">Character Sheet</h1>
+      <p class="sheet-subtitle">Official Record &nbsp;·&nbsp; Year of the Dragon, 2026</p>
+      <hr class="sheet-divider" />
+
+      <div class="char-field" id="cf1">
+        <span class="field-label">Name</span>
+        <span class="field-value">Alyssa Christianson</span>
+      </div>
+      <div class="char-field" id="cf2">
+        <span class="field-label">Class</span>
+        <span class="field-value">Alchemist</span>
+      </div>
+      <div class="char-field" id="cf3">
+        <span class="field-label">Alignment</span>
+        <span class="field-value">Chaotic Good</span>
+      </div>
+      <div class="char-field" id="cf4">
+        <span class="field-label">Special Ability</span>
+        <span class="field-value">Transmutation of Matter <em>(Chemistry Degree, 2026)</em></span>
+      </div>
+      <div class="char-field" id="cf5">
+        <span class="field-label">Mount</span>
+        <span class="field-value">None. Travels by rail, as the ancient ones intended.</span>
+      </div>
+      <div class="char-field" id="cf6">
+        <span class="field-label">Achievement</span>
+        <span class="field-value">Rolled a Nat 20 on her Knowledge check <span class="nat20-badge">NAT 20</span></span>
+      </div>
+      <div class="char-field" id="cf7">
+        <span class="field-label">Guild Masters</span>
+        <span class="field-value">Uncle Teddy &amp; Lauren</span>
+      </div>
+      <div class="char-field" id="cf8">
+        <span class="field-label">Guild</span>
+        <span class="field-value">Independent. Chaotic Good doesn't answer to anyone.</span>
+      </div>
+
+      <hr class="sheet-divider" style="margin-top:1.2rem" />
+      <div class="sheet-seal">⚜</div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;align-items:center;">
+      <button class="quest-btn" id="btn2" onclick="goToScreen(3)">[ VIEW YOUR QUEST ]</button>
+      <p class="scroll-hint" id="scroll-hint2">scroll up if needed</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     SCREEN 3 — THE QUEST SCROLL
+════════════════════════════════════════ -->
+<section class="screen" id="screen3">
+  <div class="scroll-stage" id="scroll-stage">
+    <div class="scroll-top-rod"></div>
+    <div class="scroll-body" id="scroll-body">
+      <div class="scroll-inner">
+        <h2 class="scroll-heading">— QUEST PROCLAMATION —</h2>
+        <p class="quest-line" id="q1"></p>
+        <p class="quest-line" id="q2"></p>
+        <p class="quest-line" id="q3"></p>
+        <p class="quest-line" id="q4"></p>
+        <p class="quest-line" id="q5"></p>
+        <p class="quest-line redacted" id="q6"></p>
+        <p class="quest-line coordinates" id="q7"></p>
+        <div class="scroll-ornament" id="scroll-orn">— ⚔ —</div>
+      </div>
+    </div>
+    <div class="scroll-bottom-rod" id="scroll-bottom" style="opacity:0;transition:opacity 0.5s ease;margin-top:-1px;"></div>
+  </div>
+
+  <button class="quest-btn" id="btn3" onclick="goToScreen(4)">[ I AM WORTHY ]</button>
+</section>
+
+<!-- ═══════════════════════════════════════
+     SCREEN 4 — THE REVEAL
+════════════════════════════════════════ -->
+<section class="screen" id="screen4">
+  <div class="map-stage">
+    <div class="map-container">
+      <div class="map-svg-wrap">
+        <!-- Fantasy-styled Europe map using SVG paths -->
+        <svg id="europe-map" viewBox="0 0 500 580" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="seaGrad" cx="50%" cy="50%">
+              <stop offset="0%" stop-color="#1e3a5f"/>
+              <stop offset="100%" stop-color="#0d1e35"/>
+            </radialGradient>
+            <filter id="mapGlow">
+              <feGaussianBlur stdDeviation="1.5" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            <radialGradient id="countryGrad" cx="30%" cy="30%">
+              <stop offset="0%" stop-color="#4a7c59" stop-opacity="0.3"/>
+              <stop offset="100%" stop-color="#2d5c3a" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+
+          <!-- Sea background -->
+          <rect width="500" height="580" fill="url(#seaGrad)"/>
+          <!-- Sea texture lines -->
+          <g stroke="#1a3050" stroke-width="0.5" opacity="0.4">
+            <line x1="0" y1="50"  x2="500" y2="50"/>
+            <line x1="0" y1="100" x2="500" y2="100"/>
+            <line x1="0" y1="150" x2="500" y2="150"/>
+            <line x1="0" y1="200" x2="500" y2="200"/>
+            <line x1="0" y1="250" x2="500" y2="250"/>
+            <line x1="0" y1="300" x2="500" y2="300"/>
+            <line x1="0" y1="350" x2="500" y2="350"/>
+            <line x1="0" y1="400" x2="500" y2="400"/>
+            <line x1="0" y1="450" x2="500" y2="450"/>
+            <line x1="0" y1="500" x2="500" y2="500"/>
+            <line x1="0" y1="550" x2="500" y2="550"/>
+          </g>
+
+          <!-- Country fills — simplified silhouettes -->
+          <!-- Scandinavia / Norway + Sweden -->
+          <path d="M230,10 L255,18 L270,35 L275,60 L265,85 L270,110 L260,130 L255,155 L245,165 L235,155 L230,135 L225,110 L215,90 L210,65 L215,40 L225,22 Z" fill="#3d6b4a" stroke="#4a7c59" stroke-width="1"/>
+          <path d="M255,18 L280,25 L300,40 L310,65 L305,90 L295,115 L285,135 L275,150 L265,140 L265,115 L268,90 L270,65 L268,40 Z" fill="#3d6b4a" stroke="#4a7c59" stroke-width="1"/>
+          <!-- Finland -->
+          <path d="M300,20 L325,15 L345,30 L350,55 L340,80 L330,100 L315,115 L305,100 L308,75 L305,50 L300,35 Z" fill="#3d6b4a" stroke="#4a7c59" stroke-width="1"/>
+          <!-- Denmark -->
+          <path d="M228,155 L238,165 L245,175 L238,182 L228,178 L222,168 L224,158 Z" fill="#3d6b4a" stroke="#4a7c59" stroke-width="1"/>
+          <!-- UK / Britain -->
+          <path d="M148,80 L168,72 L178,85 L175,110 L165,130 L155,145 L145,148 L138,135 L140,110 L143,90 Z" fill="#3d6b4a" stroke="#4a7c59" stroke-width="1"/>
+          <!-- Ireland -->
+          <path d="M120,100 L135,95 L140,110 L135,125 L122,128 L115,115 L116,102 Z" fill="#3d6b4a" stroke="#4a7c59" stroke-width="1"/>
+          <!-- France -->
+          <path d="M165,175 L200,168 L218,178 L222,198 L218,220 L205,235 L188,240 L172,235 L160,220 L158,200 Z" fill="#3d6b4a" stroke="#4a7c59" stroke-width="1"/>
+          <!-- Iberian Peninsula — Spain & Portugal (pin target) -->
+          <path d="M130,245 L165,238 L188,242 L200,258 L198,285 L188,310 L172,328 L155,332 L135,325 L118,308 L112,280 L118,258 Z" fill="#3d6b4a" stroke="#4a7c59" stroke-width="1.5" id="spain-shape"/>
+          <!-- Portugal -->
+          <path d="M118,270 L130,265 L132,285 L128,308 L118,310 L110,295 L112,278 Z" fill="#3a664a" stroke="#4a7c59" stroke-width="1"/>
+          <!-- Germany / BeNeLux -->
+          <path d="M218,165 L248,160 L265,172 L270,192 L260,210 L245,215 L228,210 L218,195 L215,178 Z" fill="#3d6b4a" stroke="#4a7c59" stroke-width="1"/>
+          <!-- Poland -->
+          <path d="M265,158 L300,152 L318,162 L322,180 L315,198 L298,205 L278,200 L265,188 L262,172 Z" fill="#3d6b4a" stroke="#4a7c59" stroke-width="1"/>
+          <!-- Italy (boot) — pin target -->
+          <path d="M218,228 L232,220 L248,225 L255,242 L258,265 L255,285 L248,305 L240,325 L232,340 L225,345 L220,330 L222,310 L228,290 L230,268 L228,248 L220,238 Z" fill="#3d6b4a" stroke="#4a7c59" stroke-width="1.5" id="italy-shape"/>
+          <!-- "Boot toe" -->
+          <path d="M228,340 L238,348 L245,360 L240,368 L230,365 L222,352 L224,342 Z" fill="#3d6b4a" stroke="#4a7c59" stroke-width="1"/>
+          <!-- Sicily -->
+          <path d="M222,370 L238,365 L245,375 L240,382 L228,384 L218,378 L218,370 Z" fill="#3d6b4a" stroke="#4a7c59" stroke-width="1"/>
+          <!-- Austria / Czech / Switzerland -->
+          <path d="M230,208 L260,205 L272,215 L270,230 L255,238 L238,235 L228,225 Z" fill="#3d6b4a" stroke="#4a7c59" stroke-width="1"/>
+          <!-- Balkans (simplified) -->
+          <path d="M268,228 L300,220 L320,230 L328,255 L318,278 L300,288 L280,282 L265,265 L262,245 Z" fill="#3d6b4a" stroke="#4a7c59" stroke-width="1"/>
+          <!-- Greece -->
+          <path d="M288,285 L308,278 L318,290 L315,310 L305,325 L292,328 L283,315 L282,298 Z" fill="#3d6b4a" stroke="#4a7c59" stroke-width="1"/>
+          <!-- Romania / Hungary -->
+          <path d="M295,198 L328,192 L348,205 L350,225 L338,240 L318,245 L298,238 L288,222 L290,208 Z" fill="#3d6b4a" stroke="#4a7c59" stroke-width="1"/>
+          <!-- Ukraine / Belarus -->
+          <path d="M318,148 L368,138 L400,148 L408,170 L395,190 L368,200 L345,198 L325,185 L315,168 Z" fill="#3d6b4a" stroke="#4a7c59" stroke-width="1"/>
+          <!-- Baltics -->
+          <path d="M280,120 L305,112 L325,118 L328,138 L315,148 L292,150 L275,140 L272,125 Z" fill="#3d6b4a" stroke="#4a7c59" stroke-width="1"/>
+
+          <!-- Sea labels -->
+          <text x="80" y="200" font-family="'IM Fell English',serif" font-style="italic" font-size="11" fill="#2a4a6a" opacity="0.7" text-anchor="middle">Atlantic</text>
+          <text x="80" y="215" font-family="'IM Fell English',serif" font-style="italic" font-size="11" fill="#2a4a6a" opacity="0.7" text-anchor="middle">Ocean</text>
+          <text x="215" y="385" font-family="'IM Fell English',serif" font-style="italic" font-size="10" fill="#2a4a6a" opacity="0.7" text-anchor="middle">Mediterranean</text>
+          <text x="215" y="396" font-family="'IM Fell English',serif" font-style="italic" font-size="10" fill="#2a4a6a" opacity="0.7" text-anchor="middle">Sea</text>
+
+          <!-- Country glow overlay -->
+          <rect width="500" height="580" fill="url(#countryGrad)" pointer-events="none"/>
+        </svg>
+
+        <!-- Fog of war -->
+        <div class="fog-overlay" id="fog-overlay">
+          <div class="fog-particles" id="fog-particles"></div>
+        </div>
+
+        <!-- Map pin (Spain/Italy region) -->
+        <div class="map-pin" id="map-pin">
+          <svg viewBox="0 0 36 42" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="18" cy="18" r="14" fill="#c9a84c" opacity="0.3"/>
+            <path d="M18 2 C10 2 4 8 4 16 C4 26 18 40 18 40 C18 40 32 26 32 16 C32 8 26 2 18 2 Z" fill="#c9a84c"/>
+            <path d="M18 4 C11 4 6 9 6 16 C6 25 18 37 18 37 C18 37 30 25 30 16 C30 9 25 4 18 4 Z" fill="#f0c040"/>
+            <circle cx="18" cy="16" r="5" fill="#2c1a0e"/>
+            <circle cx="16" cy="14" r="1.5" fill="#f4e4c1" opacity="0.6"/>
+          </svg>
+          <div class="pin-label">Guild HQ — TBD</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reveal text overlay -->
+  <div class="reveal-text-stage" id="reveal-text">
+    <p class="reveal-line" id="r1"></p>
+    <p class="reveal-line" id="r2"></p>
+    <p class="reveal-line" id="r3"></p>
+    <p class="reveal-line love-line" id="r4"></p>
+    <p class="reveal-line final-line" id="r5"></p>
+  </div>
+</section>
+
+<script>
+/* ═══════════════════════════════════════════
+   AMBIENT RUNE CANVAS — SCREEN 1
+═══════════════════════════════════════════ */
+const RUNES = ['ᚠ','ᚢ','ᚦ','ᚨ','ᚱ','ᚲ','ᚷ','ᚹ','ᚺ','ᚾ','ᛁ','ᛃ','ᛇ','ᛈ','ᛉ','ᛊ','ᛏ','ᛒ','ᛖ','ᛗ','ᛚ','ᛜ','ᛞ','ᛟ'];
+
+function initRuneCanvas() {
+  const canvas = document.getElementById('rune-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [];
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function spawnRune() {
+    const edge = Math.floor(Math.random() * 4);
+    let x, y;
+    if (edge === 0) { x = Math.random() * W; y = -20; }
+    else if (edge === 1) { x = W + 20; y = Math.random() * H; }
+    else if (edge === 2) { x = Math.random() * W; y = H + 20; }
+    else { x = -20; y = Math.random() * H; }
+    const cx = W / 2, cy = H / 2;
+    const angle = Math.atan2(cy - y, cx - x);
+    const speed = 0.15 + Math.random() * 0.2;
+    particles.push({
+      x, y,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      rune: RUNES[Math.floor(Math.random() * RUNES.length)],
+      size: 12 + Math.random() * 10,
+      opacity: 0,
+      maxOpacity: 0.12 + Math.random() * 0.18,
+      fadeIn: true,
+      life: 0,
+      maxLife: 200 + Math.random() * 300,
+    });
+  }
+
+  let frameCount = 0;
+  function tick() {
+    ctx.clearRect(0, 0, W, H);
+    if (frameCount % 30 === 0) spawnRune();
+    frameCount++;
+
+    particles = particles.filter(p => {
+      p.life++;
+      if (p.fadeIn) {
+        p.opacity = Math.min(p.maxOpacity, p.opacity + 0.003);
+        if (p.opacity >= p.maxOpacity) p.fadeIn = false;
+      }
+      if (p.life > p.maxLife) {
+        p.opacity -= 0.004;
+        if (p.opacity <= 0) return false;
+      }
+      p.x += p.vx; p.y += p.vy;
+      ctx.save();
+      ctx.globalAlpha = p.opacity;
+      ctx.fillStyle = '#4a7c59';
+      ctx.shadowColor = '#4a7c59';
+      ctx.shadowBlur = 10;
+      ctx.font = `${p.size}px serif`;
+      ctx.fillText(p.rune, p.x, p.y);
+      ctx.restore();
+      return true;
+    });
+    if (document.getElementById('screen1').classList.contains('active')) {
+      requestAnimationFrame(tick);
+    }
+  }
+  tick();
+}
+
+/* ═══════════════════════════════════════════
+   TYPEWRITER
+═══════════════════════════════════════════ */
+function typewriter(el, text, delay, speed = 45) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      el.style.opacity = '1';
+      let i = 0;
+      function type() {
+        el.textContent = text.slice(0, i + 1);
+        i++;
+        if (i < text.length) setTimeout(type, speed + Math.random() * 15);
+        else resolve();
+      }
+      type();
+    }, delay);
+  });
+}
+
+function fadeIn(el, delay, duration = 600) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      el.style.transition = `opacity ${duration}ms ease`;
+      el.style.opacity = '1';
+      setTimeout(resolve, duration);
+    }, delay);
+  });
+}
+
+/* ═══════════════════════════════════════════
+   SCREEN TRANSITIONS
+═══════════════════════════════════════════ */
+let currentScreen = 1;
+
+function goToScreen(n) {
+  const flash = document.getElementById('flash');
+  flash.classList.add('flash');
+  setTimeout(() => {
+    document.getElementById(`screen${currentScreen}`).classList.remove('active');
+    document.getElementById(`screen${currentScreen}`).classList.add('fade-out');
+    const next = document.getElementById(`screen${n}`);
+    next.classList.add('active');
+    next.classList.remove('fade-out');
+    currentScreen = n;
+    flash.classList.remove('flash');
+    if (n === 2) initScreen2();
+    if (n === 3) initScreen3();
+    if (n === 4) initScreen4();
+  }, 200);
+}
+
+/* ═══════════════════════════════════════════
+   SCREEN 1 — SUMMONING SEQUENCE
+═══════════════════════════════════════════ */
+function initScreen1() {
+  initRuneCanvas();
+  const l1 = document.getElementById('s1-l1');
+  const l2 = document.getElementById('s1-l2');
+  const l3 = document.getElementById('s1-l3');
+  const seal = document.getElementById('seal-wrap');
+
+  (async () => {
+    await typewriter(l1, '"A message stirs from across the realm..."', 1200, 50);
+    await new Promise(r => setTimeout(r, 1200));
+    await typewriter(l2, '"It seeks one soul in particular..."', 0, 50);
+    await new Promise(r => setTimeout(r, 1600));
+    await typewriter(l3, '...ALYSSA CHRISTIANSON', 0, 80);
+    await new Promise(r => setTimeout(r, 600));
+    seal.classList.add('visible');
+  })();
+}
+
+/* ═══════════════════════════════════════════
+   SEAL BREAK
+═══════════════════════════════════════════ */
+function breakSeal() {
+  const sealEl = document.getElementById('wax-seal');
+  if (sealEl.dataset.broken) return;
+  sealEl.dataset.broken = 'true';
+
+  // Flash crack
+  document.getElementById('seal-crack-svg').style.opacity = '1';
+  setTimeout(() => {
+    sealEl.classList.add('seal-breaking');
+    // Vibrate if supported
+    if (navigator.vibrate) navigator.vibrate([30, 20, 60]);
+    setTimeout(() => goToScreen(2), 600);
+  }, 80);
+}
+
+/* ═══════════════════════════════════════════
+   SCREEN 2 — CHARACTER SHEET
+═══════════════════════════════════════════ */
+function initScreen2() {
+  const fields = ['cf1','cf2','cf3','cf4','cf5','cf6','cf7','cf8'];
+  const btn = document.getElementById('btn2');
+
+  fields.forEach((id, i) => {
+    setTimeout(() => {
+      document.getElementById(id).classList.add('revealed');
+      if (i === fields.length - 1) {
+        setTimeout(() => btn.classList.add('ready'), 400);
+      }
+    }, 300 + i * 220);
+  });
+}
+
+/* ═══════════════════════════════════════════
+   SCREEN 3 — QUEST SCROLL
+═══════════════════════════════════════════ */
+function initScreen3() {
+  const scrollBody = document.getElementById('scroll-body');
+  const scrollBottom = document.getElementById('scroll-bottom');
+  const btn = document.getElementById('btn3');
+  const orn = document.getElementById('scroll-orn');
+
+  const lines = [
+    { id: 'q1', text: '"The Guild Masters have deliberated..."', delay: 600 },
+    { id: 'q2', text: '"The realm requires a champion of rare intellect..."', delay: 2200 },
+    { id: 'q3', text: '"One who has mastered the arcane arts of molecular alchemy..."', delay: 4000 },
+    { id: 'q4', text: '"The destination lies across the great sea..."', delay: 5900 },
+    { id: 'q5', text: '"In the ancient lands of ██████..."', delay: 7600 },
+    { id: 'q6', text: '"Coordinates to be confirmed by the Guild — Fall/Winter 2026"', delay: 9300 },
+  ];
+
+  // Unfurl scroll
+  setTimeout(() => {
+    scrollBody.classList.add('unfurled');
+    setTimeout(() => { scrollBottom.style.opacity = '1'; }, 1800);
+  }, 300);
+
+  lines.forEach(({ id, text, delay }) => {
+    setTimeout(() => {
+      const el = document.getElementById(id);
+      el.style.transition = 'opacity 0.6s ease';
+      el.style.opacity = '1';
+      el.textContent = text;
+    }, delay);
+  });
+
+  setTimeout(() => {
+    orn.style.transition = 'opacity 0.6s ease';
+    orn.style.opacity = '1';
+    setTimeout(() => btn.classList.add('ready'), 400);
+  }, 10800);
+}
+
+/* ═══════════════════════════════════════════
+   SCREEN 4 — THE REVEAL
+═══════════════════════════════════════════ */
+function initScreen4() {
+  const fog = document.getElementById('fog-overlay');
+  const pin = document.getElementById('map-pin');
+  const revealStage = document.getElementById('reveal-text');
+
+  // Step 1: Clear fog after short pause
+  setTimeout(() => {
+    fog.classList.add('cleared');
+
+    // Step 2: Drop pin
+    setTimeout(() => {
+      pin.classList.add('dropped');
+      if (navigator.vibrate) navigator.vibrate([20, 10, 40, 10, 80]);
+
+      // Step 3: Particle burst
+      setTimeout(() => {
+        launchParticles();
+
+        // Step 4: Reveal text
+        setTimeout(() => {
+          revealStage.classList.add('visible');
+          revealLines();
+        }, 1800);
+      }, 800);
+    }, 1200);
+  }, 800);
+}
+
+function revealLines() {
+  const lines = [
+    { id: 'r1', text: '"Your quest: Cross the great sea."', delay: 0 },
+    { id: 'r2', text: '"Find Uncle Teddy & Lauren in their new realm."', delay: 1800 },
+    { id: 'r3', text: '"Stay as long as the stars allow."', delay: 3600 },
+    { id: 'r4', text: '"This quest was forged with love."', delay: 5600 },
+    { id: 'r5', text: '"Your adventure begins Fall 2026. 🎓 ⚔️ ✨"', delay: 7200 },
+  ];
+  lines.forEach(({ id, text, delay }) => {
+    setTimeout(() => {
+      const el = document.getElementById(id);
+      el.textContent = text;
+      el.style.transition = 'opacity 1s ease';
+      el.style.opacity = '1';
+    }, delay);
+  });
+  // Re-trigger particles gently later
+  setTimeout(launchParticles, 9500);
+}
+
+/* ═══════════════════════════════════════════
+   PARTICLE BURST
+═══════════════════════════════════════════ */
+function launchParticles() {
+  const canvas = document.getElementById('particle-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+  canvas.classList.add('active');
+
+  const EMOJIS = ['✨','⚔️','🌟','💫','🗡️','⚜️','🔮'];
+  const particles = [];
+  const cx = window.innerWidth / 2;
+  const cy = window.innerHeight * 0.38;
+
+  // Gold sparkles
+  for (let i = 0; i < 80; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const speed = 2 + Math.random() * 5;
+    particles.push({
+      x: cx, y: cy,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed - 2,
+      size: 2 + Math.random() * 3,
+      color: ['#f0c040','#c9a84c','#fff8e7','#4a7c59'][Math.floor(Math.random()*4)],
+      alpha: 1, decay: 0.015 + Math.random() * 0.015,
+      type: 'dot', gravity: 0.08,
+    });
+  }
+
+  // Emoji particles
+  for (let i = 0; i < 18; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const speed = 1.5 + Math.random() * 3.5;
+    particles.push({
+      x: cx + (Math.random() - 0.5) * 40,
+      y: cy + (Math.random() - 0.5) * 40,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed - 1.5,
+      emoji: EMOJIS[Math.floor(Math.random() * EMOJIS.length)],
+      size: 16 + Math.random() * 12,
+      alpha: 1, decay: 0.008 + Math.random() * 0.008,
+      type: 'emoji', gravity: 0.05,
+    });
+  }
+
+  let running = true;
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let alive = false;
+    particles.forEach(p => {
+      if (p.alpha <= 0) return;
+      alive = true;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += p.gravity;
+      p.alpha -= p.decay;
+      if (p.type === 'dot') {
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, p.alpha);
+        ctx.fillStyle = p.color;
+        ctx.shadowColor = p.color;
+        ctx.shadowBlur = 6;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      } else {
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, p.alpha);
+        ctx.font = `${p.size}px serif`;
+        ctx.fillText(p.emoji, p.x - p.size / 2, p.y);
+        ctx.restore();
+      }
+    });
+    if (alive && running) requestAnimationFrame(animate);
+    else {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      canvas.classList.remove('active');
+    }
+  }
+  animate();
+  setTimeout(() => { running = false; }, 4000);
+}
+
+/* ═══════════════════════════════════════════
+   BOOT
+═══════════════════════════════════════════ */
+window.addEventListener('DOMContentLoaded', () => {
+  initScreen1();
+});
+</script>
+</body>
+</html>

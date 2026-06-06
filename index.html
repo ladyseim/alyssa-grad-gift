@@ -404,7 +404,10 @@
     letter-spacing: 0.1em;
     margin-bottom: 1rem;
     text-shadow: 0 1px 0 rgba(255,255,255,0.4);
+    opacity: 0;
+    transition: opacity 1s ease;
   }
+  .scroll-heading.visible { opacity: 1; }
 
   .quest-line {
     font-family: 'IM Fell English', serif;
@@ -1488,9 +1491,10 @@ function initScreen3() {
     }, delay);
   });
 
-  // Scene-break divider after graduation lines
+  // Scene-break divider + heading after graduation lines
   setTimeout(() => {
     div.classList.add('visible');
+    setTimeout(() => document.querySelector('.scroll-heading').classList.add('visible'), 800);
   }, 8000);
 
   setTimeout(() => {

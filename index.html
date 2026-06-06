@@ -566,7 +566,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: flex-end;
-    padding: 0 1.4rem 5.5rem;
+    padding: 0 1.4rem 7.5rem;
     z-index: 6;
     pointer-events: none;
     opacity: 0;
@@ -793,6 +793,44 @@
     font-size: clamp(0.9rem, 3.4vw, 1.05rem);
     color: var(--ink);
     line-height: 1.55;
+  }
+
+  .orders-grad {
+    text-align: center;
+    opacity: 0;
+    transition: opacity 1s ease;
+    margin-bottom: 1.2rem;
+  }
+  .orders-grad.visible { opacity: 1; }
+
+  #orders-divider3 { margin-bottom: 1.2rem; }
+
+  .grad-line {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: clamp(0.9rem, 3.4vw, 1.05rem);
+    color: #2a1508;
+    line-height: 1.9;
+    opacity: 0;
+    transition: opacity 1.2s ease;
+  }
+  .grad-line.visible { opacity: 1; }
+
+  .grad-mastered {
+    font-family: 'Cinzel', serif;
+    font-style: normal;
+    font-size: clamp(1.05rem, 4vw, 1.2rem);
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    color: var(--dark-brown);
+    margin: 0.3rem 0;
+  }
+
+  .grad-ornament {
+    font-size: 1rem;
+    color: var(--gold-dim);
+    opacity: 0.5;
+    margin-top: 0.6rem;
   }
 
   .orders-signoff {
@@ -1102,11 +1140,6 @@
         <p class="quest-line" id="q5"></p>
         <p class="quest-line redacted" id="q6"></p>
         <p class="quest-line coordinates" id="q7"></p>
-        <div class="scroll-divider" id="scroll-divider"></div>
-        <p class="quest-line reverent" id="q8"></p>
-        <p class="quest-line reverent" id="q9"></p>
-        <p class="quest-line reverent mastered" id="q10"></p>
-        <p class="quest-line reverent proud" id="q11"></p>
         <div class="scroll-ornament" id="scroll-orn">— ⚔ —</div>
       </div>
     </div>
@@ -1203,6 +1236,15 @@
           <span class="order-text"><strong>Await your coordinates.</strong> The Guild confirms the realm — target window: November 2026.</span>
         </li>
       </ul>
+
+      <div class="orders-grad" id="orders-grad">
+        <hr class="orders-divider" id="orders-divider3" />
+        <p class="grad-line" id="gl1">Four years of arcane study.</p>
+        <p class="grad-line" id="gl2">The most difficult spell tables ever written.</p>
+        <p class="grad-line grad-mastered" id="gl3">Mastered.</p>
+        <p class="grad-line" id="gl4">The Guild Masters are proud.</p>
+        <p class="grad-ornament">— ⚔ —</p>
+      </div>
 
       <div class="orders-signoff" id="orders-signoff">
         <p class="signoff-line" id="signoff1">The Guild Masters await your reply.</p>
@@ -1426,14 +1468,6 @@ function initScreen3() {
     { id: 'q6', text: '"Coordinates to be confirmed by the Guild — Fall/Winter 2026"',   delay: 9300,  fadeDur: 600 },
   ];
 
-  // Reverent lines — slower fades, longer pauses between each
-  const reverentLines = [
-    { id: 'q8',  text: 'Four years of arcane study.',                delay: 11400, fadeDur: 1400 },
-    { id: 'q9',  text: 'The most difficult spell tables ever written.', delay: 14200, fadeDur: 1400 },
-    { id: 'q10', text: 'Mastered.',                                   delay: 17400, fadeDur: 1800 },
-    { id: 'q11', text: 'The Guild Masters are proud.',                delay: 21200, fadeDur: 1400 },
-  ];
-
   // Unfurl scroll
   setTimeout(() => {
     scrollBody.classList.add('unfurled');
@@ -1449,25 +1483,11 @@ function initScreen3() {
     }, delay);
   });
 
-  // Divider fades in just before the reverent section
-  setTimeout(() => {
-    document.getElementById('scroll-divider').classList.add('visible');
-  }, 10800);
-
-  reverentLines.forEach(({ id, text, delay, fadeDur }) => {
-    setTimeout(() => {
-      const el = document.getElementById(id);
-      el.style.transition = `opacity ${fadeDur}ms ease`;
-      el.style.opacity = '1';
-      el.textContent = text;
-    }, delay);
-  });
-
   setTimeout(() => {
     orn.style.transition = 'opacity 1s ease';
     orn.style.opacity = '1';
     setTimeout(() => btn.classList.add('ready'), 600);
-  }, 24000);
+  }, 11200);
 }
 
 /* ═══════════════════════════════════════════
@@ -1564,21 +1584,31 @@ function initScreen5() {
   // Second divider before checklist
   setTimeout(() => divider2.classList.add('visible'), 3800);
 
-  // Three checklist items
+  // Two checklist items
   ['oi1','oi3'].forEach((id, i) => {
     setTimeout(() => {
       document.getElementById(id).classList.add('visible');
     }, 4600 + i * 1000);
   });
 
-  // Sign-off
-  const checklistEnd = 4600 + 3 * 1000 + 600;
+  // Graduation block — after checklist
+  const gradStart = 4600 + 2 * 1000 + 800;
+  setTimeout(() => {
+    document.getElementById('orders-divider3').classList.add('visible');
+    document.getElementById('orders-grad').classList.add('visible');
+    setTimeout(() => document.getElementById('gl1').classList.add('visible'), 400);
+    setTimeout(() => document.getElementById('gl2').classList.add('visible'), 1800);
+    setTimeout(() => document.getElementById('gl3').classList.add('visible'), 3600);
+    setTimeout(() => document.getElementById('gl4').classList.add('visible'), 5400);
+  }, gradStart);
+
+  // Sign-off — after graduation lines
   setTimeout(() => {
     signoff.classList.add('visible');
     s1.classList.add('visible');
     setTimeout(() => s2.classList.add('visible'), 1000);
     setTimeout(() => wax.classList.add('visible'), 2000);
-  }, checklistEnd);
+  }, gradStart + 7200);
 }
 
 /* ═══════════════════════════════════════════

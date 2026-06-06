@@ -1132,6 +1132,11 @@
     <div class="scroll-top-rod"></div>
     <div class="scroll-body" id="scroll-body">
       <div class="scroll-inner">
+        <p class="quest-line reverent" id="q8"></p>
+        <p class="quest-line mastered" id="q9"></p>
+        <p class="quest-line reverent proud" id="q10"></p>
+        <p class="quest-line proud" id="q11"></p>
+        <hr class="scroll-divider" id="scroll-div" />
         <h2 class="scroll-heading">— QUEST PROCLAMATION —</h2>
         <p class="quest-line" id="q1"></p>
         <p class="quest-line" id="q2"></p>
@@ -1236,15 +1241,6 @@
           <span class="order-text"><strong>Await your coordinates.</strong> The Guild confirms the realm — target window: November 2026.</span>
         </li>
       </ul>
-
-      <div class="orders-grad" id="orders-grad">
-        <hr class="orders-divider" id="orders-divider3" />
-        <p class="grad-line" id="gl1">Four years of arcane study.</p>
-        <p class="grad-line" id="gl2">The most difficult spell tables ever written.</p>
-        <p class="grad-line grad-mastered" id="gl3">Mastered.</p>
-        <p class="grad-line" id="gl4">The Guild Masters are proud.</p>
-        <p class="grad-ornament">— ⚔ —</p>
-      </div>
 
       <div class="orders-signoff" id="orders-signoff">
         <p class="signoff-line" id="signoff1">The Guild Masters await your reply.</p>
@@ -1459,13 +1455,22 @@ function initScreen3() {
   // Make btn3 visible now that we're on screen 3
   btn.style.display = '';
 
-  const lines = [
-    { id: 'q1', text: '"The Guild Masters have deliberated..."',                          delay: 600,   fadeDur: 600 },
-    { id: 'q2', text: '"The realm requires a champion of rare intellect..."',             delay: 2200,  fadeDur: 600 },
-    { id: 'q3', text: '"One who has mastered the arcane arts of molecular alchemy..."',   delay: 4000,  fadeDur: 600 },
-    { id: 'q4', text: '"The destination lies across the great sea..."',                   delay: 5900,  fadeDur: 600 },
-    { id: 'q5', text: '"In the ancient lands of ██████..."',                              delay: 7600,  fadeDur: 600 },
-    { id: 'q6', text: '"Coordinates to be confirmed by the Guild — Fall/Winter 2026"',   delay: 9300,  fadeDur: 600 },
+  const div = document.getElementById('scroll-div');
+
+  const gradLines = [
+    { id: 'q8',  text: 'Four years of arcane study.',                    delay: 800,   fadeDur: 800 },
+    { id: 'q9',  text: 'The most difficult spell tables ever written.',   delay: 2600,  fadeDur: 800 },
+    { id: 'q10', text: 'Mastered.',                                       delay: 4600,  fadeDur: 800 },
+    { id: 'q11', text: 'The Guild Masters are proud.',                    delay: 6400,  fadeDur: 800 },
+  ];
+
+  const questLines = [
+    { id: 'q1', text: '"The Guild Masters have deliberated..."',                          delay: 9400,  fadeDur: 600 },
+    { id: 'q2', text: '"The realm requires a champion of rare intellect..."',             delay: 11000, fadeDur: 600 },
+    { id: 'q3', text: '"One who has mastered the arcane arts of molecular alchemy..."',   delay: 12800, fadeDur: 600 },
+    { id: 'q4', text: '"The destination lies across the great sea..."',                   delay: 14700, fadeDur: 600 },
+    { id: 'q5', text: '"In the ancient lands of ██████..."',                              delay: 16400, fadeDur: 600 },
+    { id: 'q6', text: '"Coordinates to be confirmed by the Guild — Fall/Winter 2026"',   delay: 18100, fadeDur: 600 },
   ];
 
   // Unfurl scroll
@@ -1474,7 +1479,7 @@ function initScreen3() {
     setTimeout(() => { scrollBottom.style.opacity = '1'; }, 1800);
   }, 300);
 
-  lines.forEach(({ id, text, delay, fadeDur }) => {
+  [...gradLines, ...questLines].forEach(({ id, text, delay, fadeDur }) => {
     setTimeout(() => {
       const el = document.getElementById(id);
       el.style.transition = `opacity ${fadeDur}ms ease`;
@@ -1483,11 +1488,16 @@ function initScreen3() {
     }, delay);
   });
 
+  // Scene-break divider after graduation lines
+  setTimeout(() => {
+    div.classList.add('visible');
+  }, 8000);
+
   setTimeout(() => {
     orn.style.transition = 'opacity 1s ease';
     orn.style.opacity = '1';
     setTimeout(() => btn.classList.add('ready'), 600);
-  }, 11200);
+  }, 20000);
 }
 
 /* ═══════════════════════════════════════════
@@ -1591,24 +1601,13 @@ function initScreen5() {
     }, 4600 + i * 1000);
   });
 
-  // Graduation block — after checklist
-  const gradStart = 4600 + 2 * 1000 + 800;
-  setTimeout(() => {
-    document.getElementById('orders-divider3').classList.add('visible');
-    document.getElementById('orders-grad').classList.add('visible');
-    setTimeout(() => document.getElementById('gl1').classList.add('visible'), 400);
-    setTimeout(() => document.getElementById('gl2').classList.add('visible'), 1800);
-    setTimeout(() => document.getElementById('gl3').classList.add('visible'), 3600);
-    setTimeout(() => document.getElementById('gl4').classList.add('visible'), 5400);
-  }, gradStart);
-
-  // Sign-off — after graduation lines
+  // Sign-off — after checklist
   setTimeout(() => {
     signoff.classList.add('visible');
     s1.classList.add('visible');
     setTimeout(() => s2.classList.add('visible'), 1000);
     setTimeout(() => wax.classList.add('visible'), 2000);
-  }, gradStart + 7200);
+  }, 4600 + 2 * 1000 + 1200);
 }
 
 /* ═══════════════════════════════════════════

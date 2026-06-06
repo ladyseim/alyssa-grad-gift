@@ -480,8 +480,9 @@
     position: absolute;
     inset: 0;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
+    padding-top: 3.5vh;
   }
 
   .map-container {
@@ -565,7 +566,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: flex-end;
-    padding: 0 2rem 3.5rem;
+    padding: 0 1.4rem 5.5rem;
     z-index: 6;
     pointer-events: none;
     opacity: 0;
@@ -574,48 +575,74 @@
   .reveal-text-stage.visible { opacity: 1; }
 
   .reveal-text-inner {
-    background: rgba(6, 3, 14, 0.72);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    border-radius: 8px;
-    padding: 1rem 1.4rem 1.2rem;
+    background: rgba(6, 3, 14, 0.78);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 10px;
+    border: 1px solid rgba(201,168,76,0.15);
+    padding: 1.2rem 1.6rem 1.2rem;
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 100%;
+    max-width: 340px;
   }
 
-  .reveal-line {
-    font-family: 'IM Fell English', serif;
-    font-size: clamp(0.95rem, 3.8vw, 1.15rem);
-    color: var(--candle);
-    line-height: 1.9;
-    text-align: center;
-    text-shadow: 0 0 20px rgba(201,168,76,0.6);
-    opacity: 0;
-  }
-  .reveal-line.love-line {
-    margin-top: 1.2rem;
-    color: var(--gold-bright);
-    font-style: italic;
-    text-shadow: 0 0 25px rgba(240,192,64,0.8);
-  }
-  .reveal-line.final-line {
+  .reveal-header {
     font-family: 'Cinzel', serif;
-    font-size: clamp(0.8rem, 3vw, 0.95rem);
-    letter-spacing: 0.06em;
+    font-size: clamp(0.65rem, 2.5vw, 0.78rem);
+    letter-spacing: 0.18em;
     color: var(--gold);
-    margin-top: 0.4rem;
-    text-shadow: 0 0 20px rgba(201,168,76,0.7);
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 0.8rem;
+    opacity: 0;
+    text-shadow: 0 0 12px rgba(201,168,76,0.5);
   }
 
-  .reveal-line.footnote-line {
+  .reveal-steps {
+    list-style: none;
+    margin: 0 0 0.6rem;
+    padding: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+
+  .reveal-step {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    opacity: 0;
+    transition: opacity 1s ease;
+    text-align: left;
+  }
+  .reveal-step-num {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(0.65rem, 2.5vw, 0.75rem);
+    color: var(--gold);
+    flex-shrink: 0;
+    text-shadow: 0 0 8px rgba(201,168,76,0.6);
+  }
+  .reveal-step-text {
     font-family: 'IM Fell English', serif;
     font-style: italic;
-    font-size: clamp(0.7rem, 2.6vw, 0.82rem);
-    color: rgba(201,168,76,0.55);
-    margin-top: 1.6rem;
-    letter-spacing: 0.02em;
-    text-shadow: none;
+    font-size: clamp(0.88rem, 3.3vw, 1.02rem);
+    color: var(--candle);
+    line-height: 1.5;
+    text-shadow: 0 0 14px rgba(201,168,76,0.3);
+  }
+
+  .reveal-destination {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.1rem, 4.5vw, 1.35rem);
+    color: var(--gold-bright);
+    text-align: center;
+    letter-spacing: 0.06em;
+    margin-top: 1rem;
+    opacity: 0;
+    text-shadow: 0 0 20px rgba(240,192,64,0.8), 0 0 40px rgba(201,168,76,0.4);
   }
 
   /* PARTICLE CANVAS */
@@ -696,6 +723,43 @@
     transition: opacity 0.8s ease;
   }
   .orders-divider.visible { opacity: 0.6; }
+
+  .orders-heart {
+    opacity: 0;
+    transition: opacity 1s ease;
+    text-align: center;
+    margin-bottom: 1.2rem;
+  }
+  .orders-heart.visible { opacity: 1; }
+
+  .heart-line {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: clamp(0.88rem, 3.3vw, 1rem);
+    color: #3a1e08;
+    line-height: 1.7;
+    opacity: 0;
+    transition: opacity 1s ease;
+  }
+  .heart-line.visible { opacity: 1; }
+
+  .heart-final {
+    font-family: 'Cinzel', serif;
+    font-style: normal;
+    font-size: clamp(0.75rem, 2.8vw, 0.88rem);
+    letter-spacing: 0.06em;
+    color: var(--gold-dim);
+    margin-top: 0.3rem;
+  }
+  .heart-rick {
+    font-size: clamp(0.72rem, 2.6vw, 0.82rem);
+    color: rgba(92,51,23,0.6);
+    margin-top: 0.4rem;
+  }
+
+  #orders-divider2 {
+    margin-bottom: 1.2rem;
+  }
 
   .orders-list {
     list-style: none;
@@ -1004,7 +1068,7 @@
       </div>
       <div class="char-field" id="cf7">
         <span class="field-label">Guild Masters</span>
-        <span class="field-value">Uncle Teddy &amp; Lauren</span>
+        <span class="field-value">Teddy a.k.a. Uncle Edward &amp; Lauren</span>
       </div>
       <div class="char-field" id="cf8">
         <span class="field-label">Guild</span>
@@ -1084,12 +1148,22 @@
   <!-- Reveal text overlay -->
   <div class="reveal-text-stage" id="reveal-text">
     <div class="reveal-text-inner">
-      <p class="reveal-line" id="r1"></p>
-      <p class="reveal-line" id="r2"></p>
-      <p class="reveal-line" id="r3"></p>
-      <p class="reveal-line love-line" id="r4"></p>
-      <p class="reveal-line final-line" id="r5"></p>
-      <p class="reveal-line footnote-line" id="r6"></p>
+      <p class="reveal-header" id="reveal-hdr">— Your Quest —</p>
+      <ul class="reveal-steps">
+        <li class="reveal-step" id="rs1">
+          <span class="reveal-step-num">I.</span>
+          <span class="reveal-step-text">Cross the great sea to the ancient lands of Europe.</span>
+        </li>
+        <li class="reveal-step" id="rs2">
+          <span class="reveal-step-num">II.</span>
+          <span class="reveal-step-text">Find Uncle Edward &amp; Lauren in their new realm.</span>
+        </li>
+        <li class="reveal-step" id="rs3">
+          <span class="reveal-step-num">III.</span>
+          <span class="reveal-step-text">Stay as long as the stars allow.</span>
+        </li>
+      </ul>
+      <p class="reveal-destination" id="reveal-dest">Europe Awaits. ⚔️</p>
     </div>
   </div>
 </section>
@@ -1111,24 +1185,32 @@
       <h2 class="orders-title">Your Orders, Adventurer</h2>
       <hr class="orders-divider" />
 
+      <div class="orders-heart" id="orders-heart">
+        <p class="heart-line" id="hl1">"This quest was forged with love."</p>
+        <p class="heart-line heart-final" id="hl2">"Your adventure begins Fall 2026. 🎓 ⚔️ ✨"</p>
+        <p class="heart-line heart-rick" id="hl3">Made possible with the blessing of Treasurer Rick.</p>
+      </div>
+
+      <hr class="orders-divider" id="orders-divider2" />
+
       <ul class="orders-list">
         <li class="order-item" id="oi1">
           <span class="order-bullet">⚜</span>
-          <span class="order-text">Check your passport. Every adventurer needs valid travel documents.</span>
+          <span class="order-text"><strong>Check your passport.</strong> Every adventurer needs valid travel documents.</span>
         </li>
         <li class="order-item" id="oi2">
           <span class="order-bullet">⚜</span>
-          <span class="order-text">Claim your freedom. No obligations? No excuses.</span>
+          <span class="order-text"><strong>Claim your freedom.</strong> No obligations? No excuses.</span>
         </li>
         <li class="order-item" id="oi3">
           <span class="order-bullet">⚜</span>
-          <span class="order-text">Await your coordinates. The Guild will confirm the realm — target window: November 2026.</span>
+          <span class="order-text"><strong>Await your coordinates.</strong> The Guild confirms the realm — target window: November 2026.</span>
         </li>
       </ul>
 
       <div class="orders-signoff" id="orders-signoff">
         <p class="signoff-line" id="signoff1">The Guild Masters await your reply.</p>
-        <p class="signoff-name" id="signoff2">Uncle Teddy &amp; Lauren</p>
+        <p class="signoff-name" id="signoff2">Uncle Edward &amp; Lauren</p>
       </div>
 
       <div class="orders-wax">⚜</div>
@@ -1424,62 +1506,83 @@ function initScreen4() {
 }
 
 function revealLines() {
-  const lines = [
-    { id: 'r1', text: '"Your quest: Cross the great sea."', delay: 0 },
-    { id: 'r2', text: '"Find Uncle Teddy & Lauren in their new realm."', delay: 1800 },
-    { id: 'r3', text: '"Stay as long as the stars allow."', delay: 3600 },
-    { id: 'r4', text: '"This quest was forged with love."', delay: 5600 },
-    { id: 'r5', text: '"Your adventure begins Fall 2026. 🎓 ⚔️ ✨"', delay: 7200 },
-    { id: 'r6', text: 'This quest was made possible with the blessing of Treasurer Rick.', delay: 10000 },
-  ];
-  lines.forEach(({ id, text, delay }) => {
+  // Fade in header
+  setTimeout(() => {
+    const hdr = document.getElementById('reveal-hdr');
+    hdr.style.transition = 'opacity 1s ease';
+    hdr.style.opacity = '1';
+  }, 0);
+
+  // Three quest steps
+  ['rs1','rs2','rs3'].forEach((id, i) => {
     setTimeout(() => {
-      const el = document.getElementById(id);
-      el.textContent = text;
-      el.style.transition = 'opacity 1s ease';
-      el.style.opacity = '1';
-    }, delay);
+      document.getElementById(id).style.opacity = '1';
+    }, 800 + i * 1200);
   });
-  // Re-trigger particles gently later
-  setTimeout(launchParticles, 9500);
-  // Show ACCEPT THE QUEST button after all text has settled
+
+  // Destination flourish
+  setTimeout(() => {
+    const dest = document.getElementById('reveal-dest');
+    dest.style.transition = 'opacity 1.4s ease';
+    dest.style.opacity = '1';
+  }, 800 + 3 * 1200);
+
+  // Re-trigger particles
+  setTimeout(launchParticles, 5000);
+
+  // Show ACCEPT THE QUEST button
   setTimeout(() => {
     const btn4 = document.getElementById('btn4');
     btn4.style.display = '';
     setTimeout(() => btn4.classList.add('ready'), 50);
-  }, 12000);
+  }, 6800);
 }
 
 /* ═══════════════════════════════════════════
    SCREEN 5 — THE ORDERS
 ═══════════════════════════════════════════ */
 function initScreen5() {
-  const title  = document.querySelector('.orders-title');
-  const divider = document.querySelector('.orders-divider');
-  const items   = ['oi1','oi2','oi3'];
-  const signoff = document.getElementById('orders-signoff');
-  const s1      = document.getElementById('signoff1');
-  const s2      = document.getElementById('signoff2');
-  const wax     = document.querySelector('.orders-wax');
+  const title    = document.querySelector('.orders-title');
+  const divider  = document.querySelector('.orders-divider');
+  const divider2 = document.getElementById('orders-divider2');
+  const heart    = document.getElementById('orders-heart');
+  const signoff  = document.getElementById('orders-signoff');
+  const s1       = document.getElementById('signoff1');
+  const s2       = document.getElementById('signoff2');
+  const wax      = document.querySelector('.orders-wax');
 
+  // Header + first divider
   setTimeout(() => {
     title.classList.add('visible');
     setTimeout(() => divider.classList.add('visible'), 400);
   }, 300);
 
-  items.forEach((id, i) => {
+  // Heart lines from Screen 4 narrative
+  setTimeout(() => {
+    heart.classList.add('visible');
+    setTimeout(() => document.getElementById('hl1').classList.add('visible'), 200);
+    setTimeout(() => document.getElementById('hl2').classList.add('visible'), 1200);
+    setTimeout(() => document.getElementById('hl3').classList.add('visible'), 2200);
+  }, 900);
+
+  // Second divider before checklist
+  setTimeout(() => divider2.classList.add('visible'), 3800);
+
+  // Three checklist items
+  ['oi1','oi2','oi3'].forEach((id, i) => {
     setTimeout(() => {
       document.getElementById(id).classList.add('visible');
-    }, 900 + i * 1100);
+    }, 4600 + i * 1000);
   });
 
-  // Sign-off after all three items
+  // Sign-off
+  const checklistEnd = 4600 + 3 * 1000 + 600;
   setTimeout(() => {
     signoff.classList.add('visible');
     s1.classList.add('visible');
     setTimeout(() => s2.classList.add('visible'), 1000);
     setTimeout(() => wax.classList.add('visible'), 2000);
-  }, 900 + 3 * 1100 + 800);
+  }, checklistEnd);
 }
 
 /* ═══════════════════════════════════════════

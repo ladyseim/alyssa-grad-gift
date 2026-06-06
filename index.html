@@ -1186,8 +1186,8 @@
       <hr class="orders-divider" />
 
       <div class="orders-heart" id="orders-heart">
-        <p class="heart-line" id="hl1">"This quest was forged with love."</p>
-        <p class="heart-line heart-final" id="hl2">"Your adventure begins Fall 2026. 🎓 ⚔️ ✨"</p>
+        <p class="heart-line" id="hl1">This quest was forged with love.</p>
+        <p class="heart-line heart-final" id="hl2">Your adventure begins Fall 2026. 🎓 ⚔️ ✨</p>
         <p class="heart-line heart-rick" id="hl3">Made possible with the blessing of Treasurer Rick.</p>
       </div>
 
@@ -1197,10 +1197,6 @@
         <li class="order-item" id="oi1">
           <span class="order-bullet">⚜</span>
           <span class="order-text"><strong>Check your passport.</strong> Every adventurer needs valid travel documents.</span>
-        </li>
-        <li class="order-item" id="oi2">
-          <span class="order-bullet">⚜</span>
-          <span class="order-text"><strong>Claim your freedom.</strong> No obligations? No excuses.</span>
         </li>
         <li class="order-item" id="oi3">
           <span class="order-bullet">⚜</span>
@@ -1569,7 +1565,7 @@ function initScreen5() {
   setTimeout(() => divider2.classList.add('visible'), 3800);
 
   // Three checklist items
-  ['oi1','oi2','oi3'].forEach((id, i) => {
+  ['oi1','oi3'].forEach((id, i) => {
     setTimeout(() => {
       document.getElementById(id).classList.add('visible');
     }, 4600 + i * 1000);

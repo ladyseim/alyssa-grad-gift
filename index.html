@@ -1579,31 +1579,32 @@ function initScreen5() {
   // Header
   setTimeout(() => title.classList.add('visible'), 300);
 
-  // Heart lines from Screen 4 narrative
-  setTimeout(() => {
-    heart.classList.add('visible');
-    setTimeout(() => document.getElementById('hl1').classList.add('visible'), 200);
-    setTimeout(() => document.getElementById('hl2').classList.add('visible'), 1200);
-    setTimeout(() => document.getElementById('hl3').classList.add('visible'), 2200);
-  }, 900);
-
-  // Second divider before checklist
-  setTimeout(() => divider2.classList.add('visible'), 3800);
+  // Divider before checklist
+  setTimeout(() => divider2.classList.add('visible'), 900);
 
   // Two checklist items
   ['oi1','oi3'].forEach((id, i) => {
     setTimeout(() => {
       document.getElementById(id).classList.add('visible');
-    }, 4600 + i * 1000);
+    }, 1600 + i * 1000);
   });
 
   // Sign-off — after checklist
+  const signoffStart = 1600 + 2 * 1000 + 1000;
   setTimeout(() => {
     signoff.classList.add('visible');
     s1.classList.add('visible');
     setTimeout(() => s2.classList.add('visible'), 1000);
     setTimeout(() => wax.classList.add('visible'), 2000);
-  }, 4600 + 2 * 1000 + 1200);
+  }, signoffStart);
+
+  // Heart lines — last, after wax seal
+  setTimeout(() => {
+    heart.classList.add('visible');
+    setTimeout(() => document.getElementById('hl1').classList.add('visible'), 300);
+    setTimeout(() => document.getElementById('hl2').classList.add('visible'), 1400);
+    setTimeout(() => document.getElementById('hl3').classList.add('visible'), 2600);
+  }, signoffStart + 3200);
 }
 
 /* ═══════════════════════════════════════════

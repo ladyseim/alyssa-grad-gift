@@ -1132,8 +1132,8 @@
     <div class="scroll-body" id="scroll-body">
       <div class="scroll-inner">
         <p class="quest-line reverent" id="q8"></p>
-        <p class="quest-line mastered" id="q9"></p>
-        <p class="quest-line reverent proud" id="q10"></p>
+        <p class="quest-line reverent" id="q9"></p>
+        <p class="quest-line mastered" id="q10"></p>
         <p class="quest-line proud" id="q11"></p>
         <hr class="scroll-divider" id="scroll-div" />
         <h2 class="scroll-heading">— QUEST PROCLAMATION —</h2>
@@ -1220,7 +1220,6 @@
       <div class="sheet-corner br"></div>
 
       <h2 class="orders-title">Your Orders, Adventurer</h2>
-      <hr class="orders-divider" />
 
       <hr class="orders-divider" id="orders-divider2" />
 
@@ -1569,7 +1568,6 @@ function revealLines() {
 ═══════════════════════════════════════════ */
 function initScreen5() {
   const title    = document.querySelector('.orders-title');
-  const divider  = document.querySelector('.orders-divider');
   const divider2 = document.getElementById('orders-divider2');
   const heart    = document.getElementById('orders-heart');
   const signoff  = document.getElementById('orders-signoff');
@@ -1577,11 +1575,8 @@ function initScreen5() {
   const s2       = document.getElementById('signoff2');
   const wax      = document.querySelector('.orders-wax');
 
-  // Header + first divider
-  setTimeout(() => {
-    title.classList.add('visible');
-    setTimeout(() => divider.classList.add('visible'), 400);
-  }, 300);
+  // Header
+  setTimeout(() => title.classList.add('visible'), 300);
 
   // Heart lines from Screen 4 narrative
   setTimeout(() => {
